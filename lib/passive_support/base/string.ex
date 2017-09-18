@@ -20,13 +20,13 @@ defmodule PassiveSupport.String do
 
   ## Examples
 
-      iex> match("footwear, fun, and fondue", "((f[ou])[no]).+")
+      iex> Ps.String.match("footwear, fun, and fondue", "((f[ou])[no]).+")
       ["footwear, fun, and fondue", "foo", "fo"]
 
-      iex> match("fööd!", "öö")
+      iex> Ps.String.match("fööd!", "öö")
       ["öö"]
 
-      iex> match("footwear, fun, and fondue", ~r/((f[ou])[no]).+/U)
+      iex> Ps.String.match("footwear, fun, and fondue", ~r/((f[ou])[no]).+/U)
       ["foot", "foo", "fo"]
   """
   def match(string, pattern, opts \\ [])
@@ -48,13 +48,13 @@ defmodule PassiveSupport.String do
 
   ## Examples
 
-      iex> scan("footwear, fun, and fondue", "((f[ou])[no]).+")
+      iex> Ps.String.scan("footwear, fun, and fondue", "((f[ou])[no]).+")
       [["footwear, fun, and fondue", "foo", "fo"]]
 
-      iex> scan("fööd!", "öö")
+      iex> Ps.String.scan("fööd!", "öö")
       [["öö"]]
 
-      iex> scan("footwear, fun, and fondue", ~r/((f[ou])[no]).+/U)
+      iex> Ps.String.scan("footwear, fun, and fondue", ~r/((f[ou])[no]).+/U)
       [["foot", "foo", "fo"], ["fun,", "fun", "fu"], ["fond", "fon", "fo"]]
   """
   def scan(string, pattern, opts \\ [])

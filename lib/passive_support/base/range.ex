@@ -10,26 +10,26 @@ defmodule PassiveSupport.Range do
 
   ## Examples
 
-      iex> includes?(1..5, 3)
+      iex> Ps.Range.includes?(1..5, 3)
       true
 
-      iex> includes?(1..5, 5)
+      iex> Ps.Range.includes?(1..5, 5)
       true
 
-      iex> includes?(1..5, :math.pi)
+      iex> Ps.Range.includes?(1..5, :math.pi)
       true
 
-      iex> includes?(1..5, :no)
+      iex> Ps.Range.includes?(1..5, :no)
       false
 
-      iex> includes?(1..5, nil)
+      iex> Ps.Range.includes?(1..5, nil)
       false
 
-      iex> includes?(1..5, 2..4)
+      iex> Ps.Range.includes?(1..5, 2..4)
       true
-      iex> includes?(1..5, 4..6)
+      iex> Ps.Range.includes?(1..5, 4..6)
       false
-      iex> includes?(1..5, 0..2)
+      iex> Ps.Range.includes?(1..5, 0..2)
       false
   """
   def includes?(range = _s.._f, other_start..other_finish), do: includes?(range, other_start) and includes?(range, other_finish)
@@ -41,19 +41,19 @@ defmodule PassiveSupport.Range do
 
   ## Examples
 
-      iex> overlaps?(1..5, 4..6)
+      iex> Ps.Range.overlaps?(1..5, 4..6)
       true
 
-      iex> overlaps?(1..5, -2..1)
+      iex> Ps.Range.overlaps?(1..5, -2..1)
       true
 
-      iex> overlaps?(4..6, 1..5)
+      iex> Ps.Range.overlaps?(4..6, 1..5)
       true
 
-      iex> overlaps?(4..6, 7..8)
+      iex> Ps.Range.overlaps?(4..6, 7..8)
       false
 
-      iex> overlaps?(1..5, 6)
+      iex> Ps.Range.overlaps?(1..5, 6)
       false
   """
   def overlaps?(range = _s.._f, other_start..other_finish), do: includes?(range, other_start) or includes?(range, other_finish)
@@ -64,10 +64,10 @@ defmodule PassiveSupport.Range do
 
   ## Examples
 
-      iex> size(1..5)
+      iex> Ps.Range.size(1..5)
       5
 
-      iex> size(0..5)
+      iex> Ps.Range.size(0..5)
       6
   """
   def size(start..finish), do: 1+finish-start
@@ -78,7 +78,7 @@ defmodule PassiveSupport.Range do
 
   ## Examples
 
-      iex> max(0..5)
+      iex> Ps.Range.max(0..5)
       5
   """
   def max(_start..finish), do: finish
@@ -90,7 +90,7 @@ defmodule PassiveSupport.Range do
   ## Examples
 
 
-      iex> min(0..5)
+      iex> Ps.Range.min(0..5)
       0
   """
   def min(start.._finish), do: start
@@ -101,7 +101,7 @@ defmodule PassiveSupport.Range do
 
   ## Examples
 
-      iex> next_page(1..10)
+      iex> Ps.Range.next_page(1..10)
       11..20
   """
   def next_page(start..finish), do: finish+1..finish+1+(finish-start)
@@ -112,7 +112,7 @@ defmodule PassiveSupport.Range do
 
   ## Examples
 
-      iex> prev_page(1..10)
+      iex> Ps.Range.prev_page(1..10)
       -9..0
   """
   def prev_page(start..finish), do: (start-1-(finish-start))..start-1

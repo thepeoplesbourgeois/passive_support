@@ -9,13 +9,13 @@ defmodule PassiveSupport.Integer do
 
   ## Examples
 
-      iex> exp(2, 5)
+      iex> Ps.Integer.exp(2, 5)
       32
 
-      iex> exp(2, 10)
+      iex> Ps.Integer.exp(2, 10)
       1024
 
-      iex> exp(2, 100)
+      iex> Ps.Integer.exp(2, 100)
       1267650600228229401496703205376
   """
   # TODO: tail-call optimize

@@ -1,12 +1,14 @@
 ExUnit.start
 
 defmodule PassiveSupportTest do
+  alias PassiveSupport, as: Ps
+
   use ExUnit.Case, async: true
-  doctest PassiveSupport
-  doctest PassiveSupport.Range, import: true
-  doctest PassiveSupport.String, import: true
-  doctest PassiveSupport.Integer, import: true
-  doctest PassiveSupport.Enum, import: true
-  doctest PassiveSupport.List, import: true
-  doctest PassiveSupport.MapSet, import: true
+  doctest Ps
+  doctest Ps.Range
+  doctest Ps.String
+  doctest Ps.Integer
+  doctest Ps.Enum
+  doctest Ps.List
+  doctest Ps.MapSet
 end

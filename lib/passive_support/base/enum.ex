@@ -7,10 +7,10 @@ defmodule PassiveSupport.Enum do
 
   ## Examples
 
-      iex> PassiveSupport.Enum.length([1,2,nil])
+      iex> Ps.Enum.length([1,2,nil])
       3
 
-      iex> PassiveSupport.Enum.length(%{oh: :hi})
+      iex> Ps.Enum.length(%{oh: :hi})
       1
   """
   def length(enum), do: Enum.reduce(enum, 0, fn (_item, enum_length) -> enum_length+1 end)

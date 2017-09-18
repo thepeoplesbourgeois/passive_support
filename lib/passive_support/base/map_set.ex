@@ -6,8 +6,8 @@ defmodule PassiveSupport.MapSet do
   ## Examples
 
       iex> MapSet.new(["ketchup", "pickles"])
-      ...>   |> toggle("mustard")
-      ...>   |> toggle("pickles")
+      ...>   |> Ps.MapSet.toggle("mustard")
+      ...>   |> Ps.MapSet.toggle("pickles")
       #MapSet<["ketchup", "mustard"]>
 
   """
