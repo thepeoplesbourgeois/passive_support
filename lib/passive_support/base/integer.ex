@@ -19,10 +19,11 @@ defmodule PassiveSupport.Integer do
       1267650600228229401496703205376
   """
   # TODO: tail-call optimize
-  def exp(nope, _) when not is_integer(nope), do: raise("PassiveSupport.Integer.exp only accepts integers")
-  def exp(_, nope) when not is_integer(nope), do: raise("PassiveSupport.Integer.exp only accepts integers")
-  def exp(_, 0), do: 1
-  def exp(base, factor) when rem(factor, 2) == 1, do: base * exp(base, factor - 1)
+  @spec exp(integer, integer) :: integer
+  def exp(_, 0), do:
+    1
+  def exp(base, factor) when rem(factor, 2) == 1, do:
+    base * exp(base, factor - 1)
   def exp(base, factor) do
     result = exp(base, div(factor, 2))
     result * result

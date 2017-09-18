@@ -1,15 +1,31 @@
 defmodule PassiveSupport.String do
-  def parseable_integer?(string), do: Integer.parse(string) != :error
+  @spec parseable_integer?(String.t) :: boolean
+  def parseable_integer?(string), do:
+    Integer.parse(string) != :error
 
+  @spec castable_integer?(String.t) :: boolean
+  def castable_integer?(string) do
+    case Integer.parse(string) do
+    {_int, ""} ->
+      true
+    _ ->
+      false
+    end
+  end
 
-  def castable_integer?(string), do: Integer.parse(string) != :error
+  @spec parseable_float?(String.t) :: boolean
+  def parseable_float?(string), do:
+    Float.parse(string) != :error
 
-
-  def parseable_float?(string), do: Float.parse(string) != :error
-
-
-  def castable_float?(string), do: Float.parse(string) != :error
-
+  @spec castable_float?(String.t) :: boolean
+  def castable_float?(string) do
+    case Float.parse(string) do
+    {_flt, ""} ->
+      true
+    _ ->
+      false
+    end
+  end
 
   @doc """
   Converts the provided pattern to a regular expression, if necessary,
@@ -29,14 +45,14 @@ defmodule PassiveSupport.String do
       iex> Ps.String.match("footwear, fun, and fondue", ~r/((f[ou])[no]).+/U)
       ["foot", "foo", "fo"]
   """
+  @spec match(String.t, Regex.t | String.t, [keyword]) :: [String.t]
   def match(string, pattern, opts \\ [])
-  def match(string, "" <> pattern, opts) do
+  def match(string, "" <> pattern, opts), do:
     with {:ok, expression} <- Regex.compile(pattern, "u"),
       do: Regex.run(expression, string, opts)
-  end
-  def match(string, %Regex{} = pattern, opts) do
-    pattern |> Regex.run(string, opts)
-  end
+  def match(string, %Regex{} = pattern, opts), do:
+    Regex.run(pattern, string, opts)
+
 
 
   @doc """
@@ -57,10 +73,11 @@ defmodule PassiveSupport.String do
       iex> Ps.String.scan("footwear, fun, and fondue", ~r/((f[ou])[no]).+/U)
       [["foot", "foo", "fo"], ["fun,", "fun", "fu"], ["fond", "fon", "fo"]]
   """
+  @spec scan(String.t, Regex.t | String.t, [keyword]) :: [[String.t]]
   def scan(string, pattern, opts \\ [])
-  def scan(string, "" <> pattern, opts) do
+  def scan(string, "" <> pattern, opts), do:
     with {:ok, expression} <- Regex.compile(pattern, "u"),
       do: Regex.scan(expression, string, opts)
-  end
-  def scan(string, %Regex{} = pattern, opts), do: pattern |> Regex.scan(string, opts)
+  def scan(string, %Regex{} = pattern, opts), do:
+    Regex.scan(pattern, string, opts)
 end
