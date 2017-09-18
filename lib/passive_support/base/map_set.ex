@@ -11,6 +11,7 @@ defmodule PassiveSupport.MapSet do
       #MapSet<["ketchup", "mustard"]>
 
   """
+  @spec toggle(MapSet.t, any) :: MapSet.t
   def toggle(set = %MapSet{}, element) do
     case MapSet.member?(set, element) do
     true ->
@@ -19,4 +20,5 @@ defmodule PassiveSupport.MapSet do
       MapSet.put(set, element)
     end
   end
+
 end

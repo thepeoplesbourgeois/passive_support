@@ -13,7 +13,9 @@ defmodule PassiveSupport.Enum do
       iex> Ps.Enum.length(%{oh: :hi})
       1
   """
-  def length(enum), do: Enum.reduce(enum, 0, fn (_item, enum_length) -> enum_length+1 end)
+  @spec length(Enum.t) :: integer
+  def length(enum), do:
+    Enum.reduce(enum, 0, fn (_item, enum_length) -> enum_length+1 end)
 
   @doc """
   Initiates a `Task` for each element in the enumerable,
@@ -21,9 +23,10 @@ defmodule PassiveSupport.Enum do
 
   Implementation taken from http://elixir-recipes.github.io/concurrency/parallel-map/
   """
-  def async_map(enum, func) do
+  @spec async_map(Enum.t, function) :: Enum.t
+  def async_map(enum, func), do:
     enum
       |> Enum.map(&(Task.async(fn -> func.(&1) end)))
       |> Enum.map(&Task.await/1)
-  end
+
 end

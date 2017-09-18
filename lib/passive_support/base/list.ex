@@ -11,10 +11,10 @@ defmodule PassiveSupport.List do
       iex> Ps.List.to_map(["Elixir", "is",  "cool"])
       %{0 => "Elixir", 1 => "is", 2 => "cool"}
   """
-  def to_map(list) do
+  @spec to_map(list) :: Map.t
+  def to_map(list), do:
     list
-    |> to_map(fn (_item, item_index) -> item_index end)
-  end
+      |> to_map(fn (_item, item_index) -> item_index end)
 
   @doc ~S"""
   Not to be confused with Enum.map/2, returns a `Map` with the key for each
@@ -28,15 +28,16 @@ defmodule PassiveSupport.List do
       iex> Ps.List.to_map(["hello", "world", "how", "are", "you"], fn (_, index) -> index end)
       %{0 => "hello", 1 => "world", 2 => "how", 3 => "are", 4 => "you"}
   """
-  def to_map(list, key_function) when is_function(key_function, 1) do
+  @spec to_map(list, function) :: Map.t
+  def to_map(list, key_function) when is_function(key_function, 1), do:
     list
-    |> Enum.reduce(%{}, fn (item, map) -> put_in(map[key_function.(item)], item) end)
-  end
-  def to_map(list, key_function) when is_function(key_function, 2) do
+      |> Enum.reduce(%{}, fn (item, map) -> put_in(map[key_function.(item)], item) end)
+
+  def to_map(list, key_function) when is_function(key_function, 2), do:
     list
-    |> Stream.with_index
-    |> Enum.reduce(%{}, fn ({item, item_index}, map) -> put_in(map[key_function.(item, item_index)], item) end)
-  end
+      |> Stream.with_index
+      |> Enum.reduce(%{}, fn ({item, item_index}, map) -> put_in(map[key_function.(item, item_index)], item) end)
+
 
   #  TODO permutations/1 should return the possible shuffles of the list
   #  def permutations([head|tail]), do: permutations([head|tail], length([head|tail]))
