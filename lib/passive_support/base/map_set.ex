@@ -1,0 +1,22 @@
+defmodule PassiveSupport.MapSet do
+
+  @doc ~S"""
+  Adds `element` to `set` if it isn't already a member, and deletes it if it is.
+
+  ## Examples
+
+      iex> MapSet.new(["ketchup", "pickles"])
+      ...>   |> toggle("mustard")
+      ...>   |> toggle("pickles")
+      #MapSet<["ketchup", "mustard"]>
+
+  """
+  def toggle(set = %MapSet{}, element) do
+    case MapSet.member?(set, element) do
+    true ->
+      MapSet.delete(set, element)
+    false ->
+      MapSet.put(set, element)
+    end
+  end
+end
