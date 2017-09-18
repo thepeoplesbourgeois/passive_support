@@ -32,8 +32,12 @@ defmodule PassiveSupport.Range do
       iex> Ps.Range.includes?(1..5, 0..2)
       false
   """
-  def includes?(range = _s.._f, other_start..other_finish), do: includes?(range, other_start) and includes?(range, other_finish)
-  def includes?(start..finish, point), do: start <= point and point <= finish
+  @spec includes?(Range.t, Range.t) :: boolean
+  def includes?(range, other_start..other_finish), do:
+    includes?(range, other_start) and includes?(range, other_finish)
+
+  def includes?(start..finish, point), do:
+    start <= point and point <= finish
 
   @doc ~S"""
   Returns `true` if either end of either range falls within the other.
@@ -56,8 +60,11 @@ defmodule PassiveSupport.Range do
       iex> Ps.Range.overlaps?(1..5, 6)
       false
   """
-  def overlaps?(range = _s.._f, other_start..other_finish), do: includes?(range, other_start) or includes?(range, other_finish)
-  def overlaps?(_s.._f, _point), do: false
+  @spec overlaps?(Range.t, Range.t | number) :: boolean
+  def overlaps?(range = _s.._f, other_start..other_finish), do:
+    includes?(range, other_start) or includes?(range, other_finish)
+  def overlaps?(_s.._f, _point), do:
+    false
 
   @doc ~S"""
   Returns the size of the range
@@ -70,7 +77,9 @@ defmodule PassiveSupport.Range do
       iex> Ps.Range.size(0..5)
       6
   """
-  def size(start..finish), do: 1+finish-start
+  @spec size(Range.t) :: integer
+  def size(start..finish), do:
+    1+finish-start
 
 
   @doc ~S"""
@@ -81,7 +90,9 @@ defmodule PassiveSupport.Range do
       iex> Ps.Range.max(0..5)
       5
   """
-  def max(_start..finish), do: finish
+  @spec max(Range.t) :: integer
+  def max(_start..finish), do:
+    finish
 
 
   @doc ~S"""
@@ -93,7 +104,9 @@ defmodule PassiveSupport.Range do
       iex> Ps.Range.min(0..5)
       0
   """
-  def min(start.._finish), do: start
+  @spec min(Range.t) :: integer
+  def min(start.._finish), do:
+    start
 
 
   @doc ~S"""
@@ -104,7 +117,9 @@ defmodule PassiveSupport.Range do
       iex> Ps.Range.next_page(1..10)
       11..20
   """
-  def next_page(start..finish), do: finish+1..finish+1+(finish-start)
+  @spec next_page(Range.t) :: Range.t
+  def next_page(start..finish), do:
+    finish+1..finish+1+(finish-start)
 
 
   @doc ~S"""
@@ -115,7 +130,9 @@ defmodule PassiveSupport.Range do
       iex> Ps.Range.prev_page(1..10)
       -9..0
   """
-  def prev_page(start..finish), do: (start-1-(finish-start))..start-1
+  @spec prev_page(Range.t) :: Range.t
+  def prev_page(start..finish), do:
+    (start-1-(finish-start))..start-1
 
 end
 
