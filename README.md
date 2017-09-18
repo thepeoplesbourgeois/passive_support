@@ -1,6 +1,6 @@
 # PassiveSupport
 
-**TODO: Add description**
+**Helpful functions for handling data in Elixir, inspired by the Ruby library ActiveSupport**
 
 ## Installation
 
