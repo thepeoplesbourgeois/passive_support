@@ -50,6 +50,7 @@ defmodule PassiveSupport.List do
       iex> Ps.List.permutations(["love", "money", "health"], 2)
       [["love", "money"], ["love", "health"], ["money", "health"]]
   """
+# BROKEN: Only returning `[ ["love", "money"] ]` in the current implementation
 #  def permutations(list, sublist_length)
 #  def permutations([], _), do: []
 #  def permutations(_, 0), do: [[]]
