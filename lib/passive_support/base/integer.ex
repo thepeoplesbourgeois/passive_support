@@ -2,7 +2,7 @@ defmodule PassiveSupport.Integer do
 
   @doc ~S"""
   Returns an arbitrary-precision integer representation of `base^factor`,
-  which must be integers. This contrasts to the behavior of `:math.pow`,
+  which must be integers. This contrasts to the behavior of `:math.pow/2`,
   which accepts floats, and consistently returns a float.
 
   Original implementation from https://stackoverflow.com/questions/32024156/how-do-i-raise-a-number-to-a-power-in-elixir#answer-32030190

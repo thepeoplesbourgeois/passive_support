@@ -47,12 +47,11 @@ defmodule PassiveSupport.String do
   """
   @spec match(String.t, Regex.t | String.t, [keyword]) :: [String.t]
   def match(string, pattern, opts \\ [])
+  def match(string, %Regex{} = pattern, opts), do:
+    Regex.run(pattern, string, opts)
   def match(string, "" <> pattern, opts), do:
     with {:ok, expression} <- Regex.compile(pattern, "u"),
       do: Regex.run(expression, string, opts)
-  def match(string, %Regex{} = pattern, opts), do:
-    Regex.run(pattern, string, opts)
-
 
 
   @doc """
@@ -75,9 +74,9 @@ defmodule PassiveSupport.String do
   """
   @spec scan(String.t, Regex.t | String.t, [keyword]) :: [[String.t]]
   def scan(string, pattern, opts \\ [])
+  def scan(string, %Regex{} = pattern, opts), do:
+    Regex.scan(pattern, string, opts)
   def scan(string, "" <> pattern, opts), do:
     with {:ok, expression} <- Regex.compile(pattern, "u"),
       do: Regex.scan(expression, string, opts)
-  def scan(string, %Regex{} = pattern, opts), do:
-    Regex.scan(pattern, string, opts)
 end
