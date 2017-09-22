@@ -38,6 +38,24 @@ defmodule PassiveSupport.List do
       |> Stream.with_index
       |> Enum.reduce(%{}, fn ({item, item_index}, map) -> put_in(map[key_function.(item, item_index)], item) end)
 
+  @doc ~S"""
+  Returns a copy of `list` with any `nil` values removed
+
+  ## Examples
+
+      iex> Ps.List.compact([1,nil,3])
+      [1,3]
+
+      iex> Ps.List.compact([nil, nil, "hi"])
+      ["hi"]
+  """
+  @spec compact(list) :: list
+  def compact([]), do:
+    []
+  def compact([nil | tail]), do:
+    compact(tail)
+  def compact([head | tail]), do:
+    [head | compact(tail)]
 
   #  TODO permutations/1 should return the possible shuffles of the list
   #  def permutations([head|tail]), do: permutations([head|tail], length([head|tail]))
