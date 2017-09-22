@@ -11,4 +11,5 @@ defmodule PassiveSupportTest do
   doctest Ps.Enum
   doctest Ps.List
   doctest Ps.MapSet
+  doctest Ps.Item
 end
