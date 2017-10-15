@@ -33,14 +33,8 @@ defmodule PassiveSupport.Item do
     true
   def blank?(""<>string), do:
     String.match?(string, ~r/\A[[:space:]]*\z/u)
-  def blank?(item) do
-    cond do
-    Enumerable.impl_for(item) ->
-      Enum.empty?(item)
-    true ->
-      !item
-    end
-  end
+  def blank?(item), do:
+    if Enumerable.impl_for(item), do: Enum.empty?(item), else: !item
 
   @doc ~S"""
   Returns `true` of any value that is not `blank?/1`
@@ -87,13 +81,7 @@ defmodule PassiveSupport.Item do
       iex> Ps.Item.presence(" hi ")
       " hi "
   """
-  def presence(item) do
-    case blank?(item) do
-    true ->
-      nil
-    false ->
-      item
-    end
-  end
+  def presence(item), do:
+    if present?(item), do: item, else: nil
 
 end

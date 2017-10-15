@@ -1,6 +1,6 @@
 defmodule PassiveSupport.Enum do
   @doc """
-  Initiates a `Task` for each element in the enumerable,
+  Initiates a `Task` for each item in the enumerable,
   invoking the provided function, then awaits and returns the processed list.
 
   Implementation taken from http://elixir-recipes.github.io/concurrency/parallel-map/

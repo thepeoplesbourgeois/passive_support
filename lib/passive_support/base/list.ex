@@ -44,21 +44,56 @@ defmodule PassiveSupport.List do
   ## Examples
 
       iex> Ps.List.compact([1,nil,3])
-      [1,3]
+      [1, 3]
 
-      iex> Ps.List.compact([nil, nil, "hi"])
-      ["hi"]
+      iex> Ps.List.compact([false, nil, nil, "hi"])
+      [false, "hi"]
   """
   @spec compact(list) :: list
-  def compact([]), do:
-    []
-  def compact([nil | tail]), do:
-    compact(tail)
-  def compact([head | tail]), do:
-    [head | compact(tail)]
+  def compact(list), do:
+    compact(list, [])
+  def compact([], acc), do:
+    Enum.reverse(acc)
+  def compact([nil | tail], acc), do:
+    compact(tail, acc)
+  def compact([head | tail], acc), do:
+    compact(tail, [head | acc])
+
+
+  @doc ~S"""
+  Performs the provided function on every non-nil value while removing nil values.
+  If `also_filter_result` is passed, then any nil values that would be returned
+  from the function are not injected into the list.
+
+  ## Examples
+
+      iex> Ps.List.compact_map([1,2,nil,4], &(&1 * 2))
+      [2,4,8]
+
+      iex> Ps.List.compact_map([nil, "   ", {}, 0], &Ps.Item.presence/1, also_filter_result: true)
+      [0]
+  """
+  def compact_map(list, fun), do:
+    compact_map(list, fun, [], also_filter_result: false)
+  def compact_map(list, fun, options \\ [also_filter_result: false]), do:
+    compact_map(list, fun, [], options)
+
+  defp compact_map([], _fun, acc, _options), do:
+    Enum.reverse(acc)
+  defp compact_map(list, fun, acc, []), do:
+    compact_map(list, fun, acc, also_filter_result: false)
+  defp compact_map([nil|tail], fun, acc, options), do:
+    compact_map(tail, fun, acc, options)
+  defp compact_map([head|tail], fun, acc, [also_filter_result: true] = options) do
+    result = fun.(head)
+    if result, do: compact_map(tail, fun, [result | acc], options), else: compact_map(tail, fun, acc, options)
+  end
+  defp compact_map([head|tail], fun, acc, [also_filter_result: false] = options), do:
+    compact_map(tail, fun, [fun.(head) | acc], options)
+
 
   #  TODO permutations/1 should return the possible shuffles of the list
-  #  def permutations([head|tail]), do: permutations([head|tail], length([head|tail]))
+  #  def permutations([h|t]), do: permutations([h|t], length([h|t]))
 
   @doc ~S"""
   Returns all the potential permutations of `sublist_length` for the given list
