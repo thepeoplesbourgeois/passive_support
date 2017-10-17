@@ -50,15 +50,12 @@ defmodule PassiveSupport.List do
       [false, "hi"]
   """
   @spec compact(list) :: list
-  def compact(list), do:
-    compact(list, [])
-  def compact([], acc), do:
-    Enum.reverse(acc)
-  def compact([nil | tail], acc), do:
-    compact(tail, acc)
-  def compact([head | tail], acc), do:
-    compact(tail, [head | acc])
-
+  def compact([]), do:
+    []
+  def compact([nil | tail]), do:
+    compact(tail)
+  def compact([head | tail]), do:
+    [head | compact(tail)]
 
   @doc ~S"""
   Performs the provided function on every non-nil value while removing nil values.
@@ -73,8 +70,6 @@ defmodule PassiveSupport.List do
       iex> Ps.List.compact_map([nil, "   ", {}, 0], &Ps.Item.presence/1, also_filter_result: true)
       [0]
   """
-  def compact_map(list, fun), do:
-    compact_map(list, fun, [], also_filter_result: false)
   def compact_map(list, fun, options \\ [also_filter_result: false]), do:
     compact_map(list, fun, [], options)
 
