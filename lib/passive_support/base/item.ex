@@ -4,6 +4,13 @@ defmodule PassiveSupport.Item do
   as well as to bare tuples, binaries with no data, and strings containing
   only whitespace, `nil`, and `false`. Returns `false` for any other value.
 
+  Note that while a string containing only whitespace can be considered blank,
+  a charlist of the same nature will return `false`. Because charlists are
+  represented internally as lists of integers, a charlist of whitespace would
+  be indescernible from a list of numeric integers, neither of which would be
+  individually considered blank, and therefore should not be regarded as blank
+  in tandem.
+
   ## Examples
 
       iex> Ps.Item.blank?({})
@@ -20,6 +27,8 @@ defmodule PassiveSupport.Item do
       true
       iex> Ps.Item.blank?("  ")
       true
+      iex> Ps.Item.blank?('  ') # [32, 32]
+      false
       iex> Ps.Item.blank?(" hi ")
       false
   """

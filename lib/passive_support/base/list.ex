@@ -70,35 +70,30 @@ defmodule PassiveSupport.List do
       iex> Ps.List.compact_map([nil, "   ", {}, 0], &Ps.Item.presence/1, also_filter_result: true)
       [0]
   """
-  def compact_map(list, fun, options \\ [also_filter_result: false]), do:
-    compact_map(list, fun, [], options)
-
-  defp compact_map([], _fun, acc, _options), do:
-    Enum.reverse(acc)
-  defp compact_map(list, fun, acc, []), do:
-    compact_map(list, fun, acc, also_filter_result: false)
-  defp compact_map([nil|tail], fun, acc, options), do:
-    compact_map(tail, fun, acc, options)
-  defp compact_map([head|tail], fun, acc, [also_filter_result: true] = options) do
+  def compact_map(list, fun, options \\ [])
+  def compact_map([], _fun, _options), do:
+    []
+  def compact_map([nil|tail], fun, options), do:
+    compact_map(tail, fun, options)
+  def compact_map([head|tail], fun, also_filter_result: true) do
     result = fun.(head)
-    if result, do: compact_map(tail, fun, [result | acc], options), else: compact_map(tail, fun, acc, options)
+    if result, do: [result | compact_map(tail, fun, also_filter_result: true)], else: compact_map(tail, fun, also_filter_result: true)
   end
-  defp compact_map([head|tail], fun, acc, [also_filter_result: false] = options), do:
-    compact_map(tail, fun, [fun.(head) | acc], options)
-
+  def compact_map([head|tail], fun, options), do:
+    [fun.(head) | compact_map(tail, fun, options)]
 
   #  TODO permutations/1 should return the possible shuffles of the list
   #  def permutations([h|t]), do: permutations([h|t], length([h|t]))
 
-  @doc ~S"""
-  Returns all the potential permutations of `sublist_length` for the given list
-
-  ## Examples
-
-      iex> Ps.List.permutations(["love", "money", "health"], 2)
-      [["love", "money"], ["love", "health"], ["money", "health"]]
-  """
-# BROKEN: Only returning `[ ["love", "money"] ]` in the current implementation
+# BROKEN: Currently returning `[ ["love", "money"] ]` in doctest
+#  @doc ~S"""
+#  Returns all the potential permutations of `sublist_length` for the given list
+#
+#  ## Examples
+#
+#      iex> Ps.List.permutations(["love", "money", "health"], 2)
+#      [["love", "money"], ["love", "health"], ["money", "health"]]
+#  """
 #  def permutations(list, sublist_length)
 #  def permutations([], _), do: []
 #  def permutations(_, 0), do: [[]]
