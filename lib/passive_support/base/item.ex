@@ -32,18 +32,9 @@ defmodule PassiveSupport.Item do
       iex> Ps.Item.blank?(" hi ")
       false
   """
-  def blank?([]), do:
-    true
-  def blank?({}), do:
-    true
-  def blank?(%{}), do:
-    true
-  def blank?(<<>>), do:
-    true
-  def blank?(""<>string), do:
-    String.match?(string, ~r/\A[[:space:]]*\z/u)
+  @spec blank?(any) :: boolean
   def blank?(item), do:
-    if Enumerable.impl_for(item), do: Enum.empty?(item), else: !item
+    PassiveSupport.Blank.blank?(item)
 
   @doc ~S"""
   Returns `true` of any value that is not `blank?/1`
@@ -67,6 +58,7 @@ defmodule PassiveSupport.Item do
       iex> Ps.Item.present?(" hi ")
       true
   """
+  @spec present?(any) :: boolean
   def present?(item), do:
     !blank?(item)
 
@@ -90,7 +82,42 @@ defmodule PassiveSupport.Item do
       iex> Ps.Item.presence(" hi ")
       " hi "
   """
+  @spec presence(t) :: t
   def presence(item), do:
     if present?(item), do: item, else: nil
 
+end
+
+
+defprotocol PassiveSupport.Blank do
+  @fallback_to_any true
+  @spec blank?(any) :: boolean
+  def blank?(item)
+end
+
+defimpl PassiveSupport.Blank, for: BitString do
+  def blank?(<<>>), do:
+    true
+  def blank?(""<>string), do:
+    String.match?(string, ~r/\A[[:space:]]*\z/u)
+end
+
+defimpl PassiveSupport.Blank, for: Map do
+  def blank?(map), do:
+    map == %{}
+end
+
+defimpl PassiveSupport.Blank, for: Tuple do
+  def blank?(tuple), do:
+    tuple == {}
+end
+
+defimpl PassiveSupport.Blank, for: List do
+  def blank?(list), do:
+    list == []
+end
+
+defimpl PassiveSupport.Blank, for: Any do
+  def blank?(item), do:
+    if Enumerable.impl_for(item), do: Enum.empty?(item), else: !item
 end
