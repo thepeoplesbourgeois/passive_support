@@ -1,4 +1,5 @@
 defmodule PassiveSupport.Item do
+  @type t :: any
   @doc ~S"""
   Returns `true` of any value that would return `true` with `Enum.empty?/1`,
   as well as to bare tuples, binaries with no data, and strings containing
@@ -32,7 +33,7 @@ defmodule PassiveSupport.Item do
       iex> Ps.Item.blank?(" hi ")
       false
   """
-  @spec blank?(any) :: boolean
+  @spec blank?(t) :: boolean
   def blank?(item), do:
     PassiveSupport.Blank.blank?(item)
 
@@ -58,7 +59,7 @@ defmodule PassiveSupport.Item do
       iex> Ps.Item.present?(" hi ")
       true
   """
-  @spec present?(any) :: boolean
+  @spec present?(t) :: boolean
   def present?(item), do:
     !blank?(item)
 
@@ -82,7 +83,7 @@ defmodule PassiveSupport.Item do
       iex> Ps.Item.presence(" hi ")
       " hi "
   """
-  @spec presence(t) :: t
+  @spec presence(t) :: t | none
   def presence(item), do:
     if present?(item), do: item, else: nil
 
@@ -91,7 +92,8 @@ end
 
 defprotocol PassiveSupport.Blank do
   @fallback_to_any true
-  @spec blank?(any) :: boolean
+
+  @spec blank?(Item.t) :: boolean
   def blank?(item)
 end
 
@@ -118,6 +120,15 @@ defimpl PassiveSupport.Blank, for: List do
 end
 
 defimpl PassiveSupport.Blank, for: Any do
+  def blank?(%MapSet{}), do:
+    true
+
+  def blank?(item) when is_map(item), do:
+    item
+      |> Map.from_struct
+      |> Map.values
+      |> Enum.all?(&PassiveSupport.Item.blank?/1)
+
   def blank?(item), do:
     if Enumerable.impl_for(item), do: Enum.empty?(item), else: !item
 end
