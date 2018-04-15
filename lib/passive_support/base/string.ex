@@ -121,18 +121,17 @@ defmodule PassiveSupport.String do
   def length_split(string, length, first_split: false) when valid_length(length), do:
     scan(string, ~r".{1,#{length}}")
       |> Enum.map(fn [substring] -> substring end)
-  def length_split(""<>string, [_|_]=lengths, first_split: true) do
+  def length_split(""<>string, [_|_]=lengths, first_split: true), do:
     lengths
       |> Enum.map_join(fn (length) when valid_length(length) -> "(.{1,#{length}})" end)
       |> Regex.compile!
       |> Regex.run(string)
       |> tl
-  end
-  def length_split(""<>string, [_|_]=lengths, first_split: false) do
+  def length_split(""<>string, [_|_]=lengths, first_split: false), do:
     lengths
       |> Enum.map_join(fn (length) when valid_length(length) -> "(.{1,#{length}})" end)
       |> Regex.compile!
       |> Regex.scan(string)
       |> Enum.map(fn [_ | splits] -> splits end)
-  end
+
 end
