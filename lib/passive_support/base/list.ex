@@ -22,7 +22,7 @@ defmodule PassiveSupport.List do
 
   ## Examples
 
-      iex> Ps.List.to_map(["Elixir", "is",  "cool"], &(String.reverse(&1)))
+      iex> Ps.List.to_map(["Elixir", "is",  "cool"], &String.reverse/1)
       %{"si" => "is", "looc" => "cool", "rixilE" => "Elixir"}
 
       iex> Ps.List.to_map(["hello", "world", "how", "are", "you"], fn (_, index) -> index end)
