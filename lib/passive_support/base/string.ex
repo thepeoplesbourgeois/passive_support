@@ -118,7 +118,6 @@ defmodule PassiveSupport.String do
   """
   @spec length_split(String.t, integer | [integer], [first_split: boolean]) :: [String.t] | [[String.t]]
   def length_split(string, lengths, opts \\ [first_split: false])
-
   def length_split(string, length, first_split: true) when valid_length(length), do:
     hd(match(string, ~r".{1,#{length}}"))
   def length_split(string, length, first_split: false) when valid_length(length), do:
