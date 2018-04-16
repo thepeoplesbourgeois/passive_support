@@ -70,6 +70,7 @@ defmodule PassiveSupport.List do
       iex> Ps.List.compact_map([nil, "   ", {}, 0], &Ps.Item.presence/1, also_filter_result: true)
       [0]
   """
+  @spec compact_map(list, fun, [also_filter_result: boolean]) :: list
   def compact_map(list, fun, options \\ [])
   def compact_map([], _fun, _options), do:
     []

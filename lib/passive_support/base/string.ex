@@ -101,19 +101,22 @@ defmodule PassiveSupport.String do
       iex> Ps.String.length_split("hello world!", 5)
       ["hello", " worl", "d!"]
 
+      iex> Ps.String.length_split("hello world!", 8)
+      ["hello wo", "rld!"]
+
       iex> Ps.String.length_split("hello world!", 5, first_split: true)
       "hello"
 
-      iex> Ps.String.length_split("I'm getting a little tired of hello world???", [10, 9, 7])
+      iex> Ps.String.length_split("I'm getting a little tired of hello world...", [10, 9, 7])
       [
         ["I'm gettin", "g a littl", "e tired"],
-        [" of hello ", "world???"]
+        [" of hello ", "world..."]
       ]
 
       iex> Ps.String.length_split("I'm getting a little tired of hello world...", [10, 9, 7], first_split: true)
       ["I'm gettin", "g a littl", "e tired"]
   """
-  @spec length_split(String.t, integer | [integer], keyword) :: [String.t] | [[String.t]]
+  @spec length_split(String.t, integer | [integer], [first_split: boolean]) :: [String.t] | [[String.t]]
   def length_split(string, lengths, opts \\ [first_split: false])
 
   def length_split(string, length, first_split: true) when valid_length(length), do:
@@ -123,15 +126,15 @@ defmodule PassiveSupport.String do
       |> Enum.map(fn [substring] -> substring end)
   def length_split(""<>string, [_|_]=lengths, first_split: true), do:
     lengths
-      |> Enum.map_join(fn (length) when valid_length(length) -> "(.{1,#{length}})" end)
-      |> Regex.compile!
-      |> Regex.run(string)
-      |> tl
+      |> multilength_regex
+      |> Regex.run(string, capture: :all_but_first)
   def length_split(""<>string, [_|_]=lengths, first_split: false), do:
+    lengths
+      |> multilength_regex
+      |> Regex.scan(string, capture: :all_but_first)
+
+  defp multilength_regex(lengths), do:
     lengths
       |> Enum.map_join(fn (length) when valid_length(length) -> "(.{1,#{length}})" end)
       |> Regex.compile!
-      |> Regex.scan(string)
-      |> Enum.map(fn [_ | splits] -> splits end)
-
 end
