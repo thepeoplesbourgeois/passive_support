@@ -73,23 +73,21 @@ defmodule PassiveSupport.String do
       iex> Ps.String.length_split("hello world!", 5)
       ["hello", " worl", "d!"]
 
-      iex> Ps.String.length_split("hello world!", 8)
-      ["hello wo", "rld!"]
-
       iex> Ps.String.length_split("hello world!", 5, first_split: true)
       "hello"
 
-      iex> Ps.String.length_split("I'm getting a little tired of hello world...", [10, 9, 7])
+      iex> Ps.String.length_split("Life, the universe, and everything... is pattern-matchable", [10, 9, 7])
       [
-        ["I'm gettin", "g a littl", "e tired"],
-        [" of hello ", "world..."]
+        ["Life, the ", "universe,", " and ev"],
+        ["erything..", ". is patt", "ern-mat"],
+        ["chable"]
       ]
 
-      iex> Ps.String.length_split("I'm getting a little tired of hello world...", [10, 9, 7], first_split: true)
-      ["I'm gettin", "g a littl", "e tired"]
+      iex> Ps.String.length_split("Life, the universe, and everything... is pattern-matchable", [10, 9, 7], first_split: true)
+      ["Life, the ", "universe,", " and ev"]
   """
   @spec length_split(String.t(), integer | [integer], first_split: boolean) ::
-          [String.t()] | [[String.t()]]
+          String.t() | list(String.t()) | list(list(String.t()))
   def length_split(string, lengths, opts \\ [first_split: false])
 
   def length_split(string, length, opts) when valid_length(length) do
