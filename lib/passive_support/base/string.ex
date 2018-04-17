@@ -123,17 +123,41 @@ defmodule PassiveSupport.String do
   def length_split(string, length, first_split: false) when valid_length(length), do:
     scan(string, ~r".{1,#{length}}")
       |> Enum.map(fn [substring] -> substring end)
-  def length_split(""<>string, [_|_]=lengths, first_split: true), do:
-    lengths
-      |> multilength_regex
-      |> Regex.run(string, capture: :all_but_first)
-  def length_split(""<>string, [_|_]=lengths, first_split: false), do:
-    lengths
-      |> multilength_regex
-      |> Regex.scan(string, capture: :all_but_first)
+  def length_split(""<>string, [], _opts), do: string
+  def length_split(""<>string, [length | remaining_lengths], first_split: true), do:
+    length_split(string, remaining_lengths, "", length, [])
+  def length_split(""<>string, [length | remaining_lengths] = all_lengths, first_split: false), do:
+    length_split(string, remaining_lengths, [], length, [], all_lengths, [])
 
-  defp multilength_regex(lengths), do:
-    lengths
-      |> Enum.map_join(fn (length) when valid_length(length) -> "(.{1,#{length}})" end)
-      |> Regex.compile!
+
+  defp length_split(orig, remaining_lengths, current_substring, current_length, substrings)
+  defp length_split("", _lengths, new, _length, parts), do: Enum.reverse([new | parts])
+  defp length_split(_orig, [], new, 0, parts), do:
+    length_split("", [], new, 0, parts)
+  defp length_split(""<>orig, [next|rest], "", 0, parts), do:
+    length_split(orig, rest, "", next, parts)
+  defp length_split(""<>orig, [next|rest], new, 0, parts), do:
+    length_split(orig, rest, "", next, [new | parts])
+  defp length_split(""<>orig, lengths, new, length, parts) do
+    <<next::utf8, rest::binary>> = orig
+    length_split(rest, lengths, IO.iodata_to_binary([new, next]), length-1, parts)
+  end
+
+  defp length_split(orig, remaining_lengths, current_substring, current_length, working_substrings, lengths_copy, all_substrings)
+  defp length_split("", _lengths, new, _length, parts, _original_lengths, all_substrings), do:
+    Enum.reverse([Enum.reverse([new|parts]) | all_substrings])
+    # [new|parts]
+    #   |> Enum.reverse
+    #   |> (fn substrings -> [substrings | all_substrings] end).()
+    #   |> Enum.reverse
+  defp length_split(""<>orig, [], new, 0, parts, [next | rest] = og_lengths, all_substrings), do:
+    length_split(orig, rest, "", next, [], og_lengths, [Enum.reverse([new | parts]) | all_substrings])
+  defp length_split(""<>orig, [next|rest], "", 0, parts, og_lengths, all_substrings), do:
+    length_split(orig, rest, "", next, parts, og_lengths, all_substrings)
+  defp length_split(""<>orig, [next|rest], new, 0, parts, og_lengths, all_substrings), do:
+    length_split(orig, rest, "", next, [new | parts], og_lengths, all_substrings)
+  defp length_split(""<>orig, lengths, new, length, parts, og_lengths, all_substrings) do
+    <<next::utf8, rest::binary>> = orig
+    length_split(rest, lengths, IO.iodata_to_binary([new, next]), length-1, parts, og_lengths, all_substrings)
+  end
 end
