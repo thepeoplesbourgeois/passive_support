@@ -1,32 +1,4 @@
 defmodule PassiveSupport.String do
-  @spec parseable_integer?(String.t) :: boolean
-  def parseable_integer?(string), do:
-    Integer.parse(string) != :error
-
-  @spec castable_integer?(String.t) :: boolean
-  def castable_integer?(string) do
-    case Integer.parse(string) do
-    {_int, ""} ->
-      true
-    _ ->
-      false
-    end
-  end
-
-  @spec parseable_float?(String.t) :: boolean
-  def parseable_float?(string), do:
-    Float.parse(string) != :error
-
-  @spec castable_float?(String.t) :: boolean
-  def castable_float?(string) do
-    case Float.parse(string) do
-    {_flt, ""} ->
-      true
-    _ ->
-      false
-    end
-  end
-
   @doc ~S"""
   Converts the provided pattern to a regular expression, if necessary,
   and then invokes `Regex.run` on the expression and the string.
@@ -119,46 +91,42 @@ defmodule PassiveSupport.String do
   """
   @spec length_split(String.t, integer | [integer], [first_split: boolean]) :: [String.t] | [[String.t]]
   def length_split(string, lengths, opts \\ [first_split: false])
-  def length_split(string, length, first_split: true) when valid_length(length), do:
-    hd(match(string, ~r".{1,#{length}}"))
-  def length_split(string, length, first_split: false) when valid_length(length), do:
-    scan(string, ~r".{1,#{length}}")
-      |> Enum.map(fn [substring] -> substring end)
+  def length_split(string, length, opts) when valid_length(length) do
+    result = length_split(string, [length], opts)
+    if opts[:first_split], do: hd(result), else: Enum.map(result, &hd/1)
+  end
   def length_split(""<>string, [], _opts), do: string
   def length_split(""<>string, [length | remaining_lengths], first_split: true), do:
-    length_split(string, remaining_lengths, "", length, [])
+    length_split(String.graphemes(string), remaining_lengths, "", length, [])
   def length_split(""<>string, [length | remaining_lengths] = all_lengths, first_split: false), do:
-    length_split(string, remaining_lengths, [], length, [], all_lengths, [])
+    length_split(String.graphemes(string), remaining_lengths, [], length, [], all_lengths, [])
 
 
   defp length_split(orig, remaining_lengths, current_substring, current_length, substrings)
-  defp length_split("", _lengths, new, _length, parts), do: Enum.reverse([new | parts])
+  defp length_split([], _lengths, new, _length, parts), do: Enum.reverse([new | parts])
   defp length_split(_orig, [], new, 0, parts), do:
-    length_split("", [], new, 0, parts)
-  defp length_split(""<>orig, [next|rest], "", 0, parts), do:
+    length_split([], [], new, 0, parts)
+  defp length_split(orig, [next|rest], "", 0, parts), do:
     length_split(orig, rest, "", next, parts)
-  defp length_split(""<>orig, [next|rest], new, 0, parts), do:
+  defp length_split(orig, [next|rest], new, 0, parts), do:
     length_split(orig, rest, "", next, [new | parts])
-  defp length_split(""<>orig, lengths, new, length, parts) do
-    <<next::utf8, rest::binary>> = orig
+  defp length_split([next | rest], lengths, new, length, parts) when valid_length(length), do:
     length_split(rest, lengths, IO.iodata_to_binary([new, next]), length-1, parts)
-  end
 
   defp length_split(orig, remaining_lengths, current_substring, current_length, working_substrings, lengths_copy, all_substrings)
-  defp length_split("", _lengths, new, _length, parts, _original_lengths, all_substrings), do:
+  defp length_split([], _lengths, new, _length, parts, _original_lengths, all_substrings), do:
     Enum.reverse([Enum.reverse([new|parts]) | all_substrings])
     # [new|parts]
     #   |> Enum.reverse
     #   |> (fn substrings -> [substrings | all_substrings] end).()
     #   |> Enum.reverse
-  defp length_split(""<>orig, [], new, 0, parts, [next | rest] = og_lengths, all_substrings), do:
+  defp length_split(orig, [], new, 0, parts, [next | rest] = og_lengths, all_substrings), do:
     length_split(orig, rest, "", next, [], og_lengths, [Enum.reverse([new | parts]) | all_substrings])
-  defp length_split(""<>orig, [next|rest], "", 0, parts, og_lengths, all_substrings), do:
+  defp length_split(orig, [next|rest], "", 0, parts, og_lengths, all_substrings), do:
     length_split(orig, rest, "", next, parts, og_lengths, all_substrings)
-  defp length_split(""<>orig, [next|rest], new, 0, parts, og_lengths, all_substrings), do:
+  defp length_split(orig, [next|rest], new, 0, parts, og_lengths, all_substrings), do:
     length_split(orig, rest, "", next, [new | parts], og_lengths, all_substrings)
-  defp length_split(""<>orig, lengths, new, length, parts, og_lengths, all_substrings) do
-    <<next::utf8, rest::binary>> = orig
+  defp length_split([next | rest], lengths, new, length, parts, og_lengths, all_substrings) when valid_length(length), do:
     length_split(rest, lengths, IO.iodata_to_binary([new, next]), length-1, parts, og_lengths, all_substrings)
-  end
+
 end
