@@ -90,8 +90,9 @@ defmodule PassiveSupport.String do
   will be the remainder of the string.
 
   To retrieve only the result of the first split of the string,
-  pass `first_split: true`. This is useful when your lengths
-  sum up to the total length of the string being split.
+  pass `first_split: true`. This is useful when the lengths of
+  your substrings sum up to the length of the original string,
+  and you want to access those substrings directly.
 
   ## Examples
 
