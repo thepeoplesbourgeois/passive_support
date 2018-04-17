@@ -101,7 +101,6 @@ defmodule PassiveSupport.String do
   def length_split(""<>string, [length | remaining_lengths] = all_lengths, first_split: false), do:
     length_split(String.graphemes(string), remaining_lengths, [], length, [], all_lengths, [])
 
-
   defp length_split(orig, remaining_lengths, current_substring, current_length, substrings)
   defp length_split([], _lengths, new, _length, parts), do: Enum.reverse([new | parts])
   defp length_split(_orig, [], new, 0, parts), do:
