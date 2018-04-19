@@ -112,13 +112,13 @@ defmodule PassiveSupport.String do
   defp do_length_split([], _lengths, _lengths_copy), do: []
   defp do_length_split(graphemes, lengths, _lengths_copy) do
     {substrings, rest} = lengths
-      |> Enum.reduce({[], graphemes},
+      |> Enum.reduce_while({[], graphemes},
            (fn
-            (_length, {parts, []}) -> # Done parsing string, do not create empty substrings
-              {parts, []}
+            (_length, {parts, []}) ->
+              {:halt, {parts, []}}
             (length, {parts, graph}) ->
               {substr, rest} = Enum.split(graph, length)
-              {[Enum.join(substr, "") | parts], rest}
+              {:cont, {[Enum.join(substr, "") | parts], rest}}
             end)
          )
     [ Enum.reverse(substrings) | do_length_split(rest, lengths, lengths) ]
