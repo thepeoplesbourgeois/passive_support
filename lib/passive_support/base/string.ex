@@ -91,11 +91,10 @@ defmodule PassiveSupport.String do
 
   def length_split(string, lengths, opts \\ [first_split: false])
 
-  def length_split(string, length, opts) when valid_length(length) do
-    result = length_split(string, [length], opts)
-    if opts[:first_split], do: hd(result), else: Enum.map(result, &hd/1)
-  end
-
+  def length_split(""<>string, length, first_split: true) when valid_length(length), do:
+    String.slice(string, 0, length)
+  def length_split(""<>string, length, first_split: false) when valid_length(length), do:
+    string |> String.graphemes |> Stream.chunk_every(length) |> Enum.map(&Enum.join(&1))
   def length_split("" <> string, [], _opts), do: string
   def length_split("" <> string, lengths, first_split: true) when is_list(lengths), do:
     do_length_split(String.graphemes(string), lengths)
@@ -106,7 +105,7 @@ defmodule PassiveSupport.String do
   defp do_length_split(_graphemes, []), do: []
   defp do_length_split(graphemes, [current_length | lengths]) do
     {substr, graphemes} = Enum.split(graphemes, current_length)
-    [Enum.join(substr, "") | do_length_split(graphemes, lengths)]
+    [Enum.join(substr) | do_length_split(graphemes, lengths)]
   end
 
   defp do_length_split([], _lengths, _lengths_copy), do: []
@@ -118,7 +117,7 @@ defmodule PassiveSupport.String do
               {:halt, {parts, []}}
             (length, {parts, graph}) ->
               {substr, rest} = Enum.split(graph, length)
-              {:cont, {[Enum.join(substr, "") | parts], rest}}
+              {:cont, {[Enum.join(substr) | parts], rest}}
             end)
          )
     [ Enum.reverse(substrings) | do_length_split(rest, lengths, lengths) ]
