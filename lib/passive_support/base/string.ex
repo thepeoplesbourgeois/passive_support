@@ -88,6 +88,7 @@ defmodule PassiveSupport.String do
   """
   @spec length_split(String.t(), integer | [integer], first_split: boolean) ::
           String.t() | list(String.t()) | list(list(String.t()))
+
   def length_split(string, lengths, opts \\ [first_split: false])
 
   def length_split(string, length, opts) when valid_length(length) do
@@ -96,69 +97,30 @@ defmodule PassiveSupport.String do
   end
 
   def length_split("" <> string, [], _opts), do: string
-  def length_split("" <> string, [length | remaining_lengths], first_split: true), do:
-    length_split(String.graphemes(string), remaining_lengths, "", length, [])
-  def length_split("" <> string, [length | remaining_lengths] = all_lengths, first_split: false), do:
-    length_split(String.graphemes(string), remaining_lengths, [], length, [], all_lengths, [])
+  def length_split("" <> string, lengths, first_split: true) when is_list(lengths), do:
+    do_length_split(String.graphemes(string), lengths)
+  def length_split("" <> string, lengths, first_split: false) when is_list(lengths), do:
+    do_length_split(String.graphemes(string), lengths, lengths)
 
-  defp length_split(
-         orig,
-         remaining_lengths,
-         current_substring,
-         current_length,
-         substrings
-       )
-  defp length_split([], _lengths, new, _length, parts), do:
-    Enum.reverse([new | parts])
-  defp length_split(_orig, [], new, 0, parts), do:
-    length_split([], [], new, 0, parts)
-  defp length_split(orig, [next | rest], "", 0, parts), do:
-    length_split(orig, rest, "", next, parts)
-  defp length_split(orig, [next | rest], new, 0, parts), do:
-    length_split(orig, rest, "", next, [new | parts])
-  defp length_split([next | rest], lengths, new, length, parts) when valid_length(length), do:
-    length_split(rest, lengths, IO.iodata_to_binary([new, next]), length - 1, parts)
+  defp do_length_split([], _lengths), do: []
+  defp do_length_split(_graphemes, []), do: []
+  defp do_length_split(graphemes, [current_length | lengths]) do
+    {substr, graphemes} = Enum.split(graphemes, current_length)
+    [Enum.join(substr, "") | do_length_split(graphemes, lengths)]
+  end
 
-  defp length_split(
-         orig,
-         remaining_lengths,
-         current_substring,
-         current_length,
-         working_substrings,
-         lengths_copy,
-         all_substrings
-       )
-
-  defp length_split([], _lengths, new, _length, parts, _original_lengths, all_substrings), do:
-    Enum.reverse([Enum.reverse([new | parts]) | all_substrings])
-    # [new|parts]
-    #   |> Enum.reverse
-    #   |> (fn substrings -> [substrings | all_substrings] end).()
-    #   |> Enum.reverse
-  defp length_split(orig, [], new, 0, parts, [next | rest] = og_lengths, all_substrings), do:
-    length_split(
-      orig,
-      rest,
-      "",
-      next,
-      [],
-      og_lengths,
-      [Enum.reverse([new | parts]) | all_substrings]
-    )
-  defp length_split(orig, [next | rest], "", 0, parts, og_lengths, all_substrings), do:
-    length_split(orig, rest, "", next, parts, og_lengths, all_substrings)
-  defp length_split(orig, [next | rest], new, 0, parts, og_lengths, all_substrings), do:
-    length_split(orig, rest, "", next, [new | parts], og_lengths, all_substrings)
-  defp length_split([next | rest], lengths, new, length, parts, og_lengths, all_substrings)
-       when valid_length(length),
-       do:
-         length_split(
-           rest,
-           lengths,
-           IO.iodata_to_binary([new, next]),
-           length - 1,
-           parts,
-           og_lengths,
-           all_substrings
+  defp do_length_split([], _lengths, _lengths_copy), do: []
+  defp do_length_split(graphemes, lengths, _lengths_copy) do
+    {substrings, rest} = lengths
+      |> Enum.reduce({[], graphemes},
+           (fn
+            (_length, {parts, []}) -> # Done parsing string, do not create empty substrings
+              {parts, []}
+            (length, {parts, graph}) ->
+              {substr, rest} = Enum.split(graph, length)
+              {[Enum.join(substr, "") | parts], rest}
+            end)
          )
+    [ Enum.reverse(substrings) | do_length_split(rest, lengths, lengths) ]
+  end
 end
