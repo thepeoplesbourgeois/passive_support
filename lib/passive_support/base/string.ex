@@ -105,21 +105,19 @@ defmodule PassiveSupport.String do
   defp do_length_split(_graphemes, []), do: []
   defp do_length_split(graphemes, [current_length | lengths]) do
     {substr, graphemes} = Enum.split(graphemes, current_length)
-    [Enum.join(substr) | do_length_split(graphemes, lengths)]
+    [IO.iodata_to_binary(substr) | do_length_split(graphemes, lengths)]
   end
 
   defp do_length_split([], _lengths, _lengths_copy), do: []
   defp do_length_split(graphemes, lengths, _lengths_copy) do
-    {substrings, rest} = lengths
-      |> Enum.reduce_while({[], graphemes},
-           (fn
-            (_length, {parts, []}) ->
-              {:halt, {parts, []}}
-            (length, {parts, graph}) ->
-              {substr, rest} = Enum.split(graph, length)
-              {:cont, {[Enum.join(substr) | parts], rest}}
-            end)
-         )
-    [ Enum.reverse(substrings) | do_length_split(rest, lengths, lengths) ]
+    {substrings, rest} = Enum.reduce_while(lengths, {[], graphemes}, (fn
+      (_length, {parts, []}) ->
+        {:halt, {parts, []}}
+      (length, {parts, graph}) ->
+        {substr, rest} = Enum.split(graph, length)
+        {:cont, {[IO.iodata_to_binary(substr) | parts], rest}}
+    end))
+
+    [Enum.reverse(substrings) | do_length_split(rest, lengths, lengths)]
   end
 end
