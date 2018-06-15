@@ -1,43 +1,4 @@
 defmodule PassiveSupport.List do
-  @doc """
-  Not to be confused with `Enum.map/2`, returns a `Map` out of the given list
-  with the index of each item being the item's key
-
-  ## Examples
-
-      iex> Ps.List.to_map(["hello", "world", "how", "are", "you"])
-      %{0 => "hello", 1 => "world", 2 => "how", 3 => "are", 4 => "you"}
-
-      iex> Ps.List.to_map(["Elixir", "is",  "cool"])
-      %{0 => "Elixir", 1 => "is", 2 => "cool"}
-  """
-  @spec to_map(list) :: Map.t
-  def to_map(list), do:
-    list
-      |> to_map(fn (_item, item_index) -> item_index end)
-
-  @doc ~S"""
-  Not to be confused with Enum.map/2, returns a `Map` with the key for each
-  item derived by the return of `key_function(item [, item_index])`
-
-  ## Examples
-
-      iex> Ps.List.to_map(["Elixir", "is",  "cool"], &String.reverse/1)
-      %{"si" => "is", "looc" => "cool", "rixilE" => "Elixir"}
-
-      iex> Ps.List.to_map(["hello", "world", "how", "are", "you"], fn (_, index) -> index end)
-      %{0 => "hello", 1 => "world", 2 => "how", 3 => "are", 4 => "you"}
-  """
-  @spec to_map(list, function) :: Map.t
-  def to_map(list, key_function) when is_function(key_function, 1), do:
-    list
-      |> Enum.reduce(%{}, fn (item, map) -> put_in(map[key_function.(item)], item) end)
-
-  def to_map(list, key_function) when is_function(key_function, 2), do:
-    list
-      |> Stream.with_index
-      |> Enum.reduce(%{}, fn ({item, item_index}, map) -> put_in(map[key_function.(item, item_index)], item) end)
-
   @doc ~S"""
   Returns a copy of `list` with any `nil` values removed
 
