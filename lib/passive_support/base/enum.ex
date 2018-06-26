@@ -40,17 +40,31 @@ defmodule PassiveSupport.Enum do
 
 
   @doc ~S"""
-  Returns true if all of the items in the enum evaluate falsey
-  in the provided function. Short-circuits with `false` on the
-  first value to return `true`.
+  Returns true if the given `fun` evaluates to false on all
+  of the items in the enumberable.
+
+  Iteration stops at the first invocation that returns a
+  truthy value (not `false` or `nil`). Invokes an identity
+  function if one is not provided.
 
   ## Examples
 
-      iex> test_list = [false, false, false]
-      ...> Ps.Enum.none?(test_list, &(&1))
+      iex> test_list = [1, 2, 3]
+      ...> Ps.Enum.none?(test_list, &(&1 == 0))
       true
-      ...> Ps.Enum.none?([true | test_list], &(&1))
+      ...> Ps.Enum.none?([0 | test_list], &(&1 == 0))
+      false
+
+      iex> Ps.Enum.none?([])
+      true
+
+      iex> Ps.Enum.none?([nil])
+      true
+
+      iex> Ps.Enum.none?([true])
       false
   """
-  def none?(enum, function), do: !Enum.any?(enum, &(function.(&1)))
+  @spec none?(Enumerable.t, function) :: boolean
+  def none?(enum, fun \\ &(&1))
+  def none?(enum, fun), do: !Enum.any?(enum, fun)
 end

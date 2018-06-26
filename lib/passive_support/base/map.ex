@@ -6,12 +6,11 @@ defmodule PassiveSupport.Map do
 
   ## Examples
 
-      iex>PassiveSupport.Map.stringify_keys(%{7 => 8, "hey" => "ha", hi: "ho"})
+      iex> PassiveSupport.Map.stringify_keys(%{7 => 8, "hey" => "ha", hi: "ho"})
       %{"7" => 8, "hey" => "ha", "hi" => "ho"}
   """
-  def stringify_keys(%{} = map) do
+  def stringify_keys(%{} = map), do:
     map
-    |> Stream.map(fn {key, value} -> {to_string(key), value} end)
-    |> Enum.into(%{})
-  end
+      |> Stream.map(fn {key, value} -> {to_string(key), value} end)
+      |> Enum.into(%{})
 end
