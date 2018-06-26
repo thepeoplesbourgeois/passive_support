@@ -255,9 +255,3 @@ defmodule PassiveSupport.Range do
     (start-(1+finish-start))..start-1
 
 end
-
-
-
-
-
-
