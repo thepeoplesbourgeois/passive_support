@@ -38,4 +38,19 @@ defmodule PassiveSupport.Enum do
       |> Stream.with_index
       |> Enum.reduce(%{}, fn ({item, item_index}, map) -> put_in(map[key_function.(item, item_index)], item) end)
 
+
+  @doc ~S"""
+  Returns true if all of the items in the enum evaluate falsey
+  in the provided function. Short-circuits with `false` on the
+  first value to return `true`.
+
+  ## Examples
+
+      iex> test_list = [false, false, false]
+      ...> Ps.Enum.none?(test_list, &(&1))
+      true
+      ...> Ps.Enum.none?([true | test_list], &(&1))
+      false
+  """
+  def none?(enum, function), do: !Enum.any?(enum, &(function.(&1)))
 end
