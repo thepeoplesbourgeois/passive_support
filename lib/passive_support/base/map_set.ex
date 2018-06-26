@@ -12,13 +12,8 @@ defmodule PassiveSupport.MapSet do
 
   """
   @spec toggle(MapSet.t(), any) :: MapSet.t()
-  def toggle(%MapSet{} = set, element) do
-    case MapSet.member?(set, element) do
-    true ->
-      MapSet.delete(set, element)
-    false ->
-      MapSet.put(set, element)
-    end
-  end
-
+  def toggle(%MapSet{} = set, element), do:
+    if MapSet.member?(set, element),
+      do: MapSet.delete(set, element),
+      else: MapSet.put(set, element)
 end
