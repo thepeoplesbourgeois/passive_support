@@ -4,9 +4,9 @@ defmodule PassiveSupport.Range do
   """
 
   @doc ~S"""
-  Returns `true` if `element` is a number within the range and `false`
-  if it is outside of the range or anything but a number. Also
-  returns `true` for `Point` values of `element`
+  Returns `true` if `other` is a number that falls within `range`, or
+  if `other_range` is fully contained within `range`, regardless of
+  polarity. Returns `false` for all other values of `other`.
 
   ## Examples
 
@@ -45,7 +45,8 @@ defmodule PassiveSupport.Range do
 
   @doc ~S"""
   Returns `true` if either end of either range falls within the other.
-  Returns `false` if the second argument is not a range.
+  Returns `false` if the second argument is not a range, or if the
+  ranges have opposing polarities.
 
   ## Examples
 
@@ -82,7 +83,8 @@ defmodule PassiveSupport.Range do
     includes?(start_1..finish_1, start_a) or includes?(start_a..finish_a, start_1) or includes?(start_1..finish_1, finish_a)
 
   @doc ~S"""
-  returns `true` if either range begins immediately after the other
+  Returns `true` if either range begins immediately after the other.
+  Returns `false` if the ranges have opposing polarities
 
   ## Examples
 
