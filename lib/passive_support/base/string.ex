@@ -113,8 +113,8 @@ defmodule PassiveSupport.String do
     {substrings, rest} = Enum.reduce_while(lengths, {[], graphemes}, (fn
       (_length, {parts, []}) ->
         {:halt, {parts, []}}
-      (length, {parts, graph}) ->
-        {substr, rest} = Enum.split(graph, length)
+      (length, {parts, graphemes}) ->
+        {substr, rest} = Enum.split(graphemes, length)
         {:cont, {[IO.iodata_to_binary(substr) | parts], rest}}
     end))
 
