@@ -8,6 +8,7 @@ defmodule PassiveSupportTest do
   doctest Ps.Range
   doctest Ps.Integer
   doctest Ps.Enum
+  doctest Ps.Stream
   doctest Ps.List
   doctest Ps.MapSet
   doctest Ps.Item
