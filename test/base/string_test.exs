@@ -1,5 +1,3 @@
-ExUnit.start
-
 defmodule PassiveSupport.StringTest do
   alias PassiveSupport, as: Ps
 

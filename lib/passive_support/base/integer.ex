@@ -1,4 +1,30 @@
 defmodule PassiveSupport.Integer do
+  @doc ~S"""
+  Returns the factorial of `n`
+
+  ## Examples
+
+      iex> Ps.Integer.factorial(5)
+      120
+
+      iex> Ps.Integer.factorial(6)
+      720
+
+      iex> Ps.Integer.factorial(-6)
+      -720
+  """
+  @spec factorial(integer) :: integer
+  def factorial(0), do: 1
+  def factorial(integer)
+  when is_integer(integer)
+  and integer < 0,
+    do: -factorial(abs(integer))
+  def factorial(integer)
+  when is_integer(integer), do: do_fact([integer])
+
+  defp do_fact([0 | factors]), do: Enum.reduce(factors, &Kernel.*/2)
+  defp do_fact([next | _factors] = factors),
+    do: do_fact([next-1 | factors])
 
   @doc ~S"""
   Returns an arbitrary-precision integer representation of `base^factor`,

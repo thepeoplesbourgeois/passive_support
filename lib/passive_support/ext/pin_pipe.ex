@@ -6,7 +6,11 @@ defmodule PinPipe do
     end
   end
 
-  defmacro left <|> right do
+  # defmacrop recursive_detect(quoted, atom) do
+
+  # end
+
+  defmacro left ~> right do
     IO.inspect(left)
     IO.inspect(right)
     IO.inspect(quote do
