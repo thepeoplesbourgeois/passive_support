@@ -46,14 +46,33 @@ defmodule PassiveSupport.Integer do
   """
   # TODO: tail-call optimize
   @spec exp(integer, integer) :: integer
+
   def exp(_, 0), do:
     1
-  def exp(base, factor) when rem(factor, 2) == 1, do:
-    base * exp(base, factor - 1)
-  def exp(base, factor) do
-    result = exp(base, div(factor, 2))
-    result * result
+  def exp(base, factor) when rem(factor, 2) == 1 do
+    recursed_multiplier = exp(base, factor - 1)
+    result = base * recursed_multiplier
+    result
   end
+  def exp(base, factor) do
+    recursed_multiplier = exp(base, div(factor, 2))
+    result = recursed_multiplier * recursed_multiplier
+    result
+  end
+
+  def tail_exp(base, factor), do: do_tail_exp(factor, [1], base)
+
+  defp do_tail_exp(0, factors, _base), do: factors |> List.flatten |> Enum.reduce(&Kernel.*/2)
+  defp do_tail_exp(next_factor, [previous | _] = factors, base) when rem(next_factor, 2) == 1 do
+    do_tail_exp(next_factor-1, [next_factor * previous | factors], base)
+  end
+  defp do_tail_exp(next_factor, factors, _base) do
+    factors
+      |> List.flatten
+      |> Enum.reduce(&Kernel.*/2)
+
+  end
+
 
   # from https://stackoverflow.com/questions/32024156/how-do-i-raise-a-number-to-a-power-in-elixir#answer-44065965
   # TODO: but not an iterative tail-call. this is O(n) where the above is closer to O(ln n)
