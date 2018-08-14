@@ -1,4 +1,5 @@
 defmodule PassiveSupport.List do
+  require Logger
   alias PassiveSupport, as: Ps
 
   @doc ~S"""
@@ -65,17 +66,22 @@ defmodule PassiveSupport.List do
         [3, 1, 2],
         [3, 2, 1]
       ]
+
+      iex> alias PassiveSupport, as: Ps
+      iex> 1..50 |> Ps.List.permutations(stream: true) |> Enum.take(2)
+      [
+        [1,2,3,4,5,6,7,8,9,10,
+         11,12,13,14,15,16,17,18,19,20,
+         21,22,23,24,25,26,27,28,29,30,
+         31,32,33,34,35,36,37,38,39,40,
+         41,42,43,44,45,46,47,48,49,50],
+         [1,2,3,4,5,6,7,8,9,10,
+         11,12,13,14,15,16,17,18,19,20,
+         21,22,23,24,25,26,27,28,29,30,
+         31,32,33,34,35,36,37,38,39,40,
+         41,42,43,44,45,46,47,48,50,49]
+      ]
   """
-  # iex> 1..50 |> Enum.to_list |> Ps.List.permutations(stream: true) |> Enum.take(1)
-  # [
-  #   [1,2,3,4,5,6,7,8,9,10,
-  #    11,12,13,14,15,16,17,18,19,20,
-  #    21,22,23,24,25,26,27,28,29,30,
-  #    31,32,33,34,35,36,37,38,39,40,
-  #    41,42,43,44,44,46,47,48,49,50]
-  # ]
-
-
   @spec permutations([any], [stream: boolean()]) :: [[any]] | Stream.t
   def permutations(list, options \\ [])
 
@@ -88,11 +94,27 @@ defmodule PassiveSupport.List do
       do: lazy,
       else: Enum.to_list(lazy)
   end
+  def permutations(enum, options), do: enum |> Enum.to_list |> permutations(options)
 
   defp make_permutations(list) do
     list
-      |> map_permutations(0, 0)
+      |> borken_permutations(0)
+      # |> map_permutations(0, 0)
       # |> list_permutations
+  end
+
+  def borken_permutations(map, indent_level) when map_size(map) == 0 do
+    [[]]
+  end
+  def borken_permutations(map, indent_level) when is_map(map) do
+    map
+      |> Stream.flat_map(fn {index, next} ->
+           submap = Map.delete(map, index)
+           Logger.debug(debug_indent("inside flat_map", indent_level))
+           Logger.debug(debug_indent("index: #{index}, next: #{next}", indent_level))
+           Logger.debug(debug_indent("submap: #{inspect(submap)}", indent_level))
+           Stream.map(borken_permutations(submap, indent_level+1), fn (submap) -> [next | submap] end)
+         end)
   end
 
   def list_permutations(list) when is_list(list) do
@@ -104,37 +126,37 @@ defmodule PassiveSupport.List do
 
   defp debug_indent(string, indentation), do: [String.duplicate("  ", indentation), string]
 
-  defp map_permutations(map, _index, _indentation) when map_size(map) == 0, do: [[]]
-  defp map_permutations(map, first_index, debug_level) do
-    first_index..(map_size(map)-1) |> Stream.flat_map(fn _ ->
-      {next, submap} = Map.pop(map, first_index)
-      IO.puts(debug_indent("inside flat_map", debug_level))
-      IO.puts(debug_indent("map: #{inspect(map)}", debug_level))
-      IO.puts(debug_indent("index: #{inspect(first_index)}", debug_level))
+  # defp map_permutations(map, _index, _indentation) when map_size(map) == 0, do: [[]]
+  # defp map_permutations(map, first_index, debug_level) do
+  #   first_index..(map_size(map)-1) |> Stream.flat_map(fn _ ->
+  #     {next, submap} = Map.pop(map, first_index)
+  #     Logger.debug(debug_indent("inside flat_map", debug_level))
+  #     Logger.debug(debug_indent("map: #{inspect(map)}", debug_level))
+  #     Logger.debug(debug_indent("index: #{inspect(first_index)}", debug_level))
 
-      Stream.map(map_permutations(submap, first_index+1, debug_level+1), fn sublist ->
-        IO.puts(debug_indent("sublist: #{inspect(sublist)}", debug_level))
-        [next | sublist]
-      end)
-    end)
-  end
-
-  # @spec map_permutations(%{integer => any()}, integer) :: Stream.t
-  # defp map_permutations(map, debug_indentation) do
-  #   indent = fn string -> [String.duplicate("  ", debug_indentation*2), string] end
-  #   # IO.puts(indent.("inside map_permutations #{debug_indentation}"))
-  #   Stream.flat_map(0..map_size(map), fn index ->
-  #     # IO.puts(indent.("  next: #{inspect(next)}"))
-  #     next = map[index]
-  #     Stream.map(
-  #       map_permutations(Map.delete(map, index), debug_indentation+1),
-  #       fn sublist ->
-  #         IO.puts(indent.("  sublist: #{inspect(sublist)}"))
-  #         [next | sublist]
-  #       end
-  #     )
+  #     Stream.map(map_permutations(submap, first_index+1, debug_level+1), fn sublist ->
+  #       Logger.debug(debug_indent("sublist: #{inspect(sublist)}", debug_level))
+  #       [next | sublist]
+  #     end)
   #   end)
   # end
+
+  @spec map_permutations(%{integer => any()}, integer) :: Stream.t
+  defp map_permutations(map, debug_indentation) do
+    indent = fn string -> [String.duplicate("  ", debug_indentation*2), string] end
+    # Logger.debug(indent.("inside map_permutations #{debug_indentation}"))
+    Stream.flat_map(0..map_size(map), fn index ->
+      # Logger.debug(indent.("  next: #{inspect(next)}"))
+      next = map[index]
+      Stream.map(
+        map_permutations(Map.delete(map, index), debug_indentation+1),
+        fn sublist ->
+          Logger.debug(indent.("  sublist: #{inspect(sublist)}"))
+          [next | sublist]
+        end
+      )
+    end)
+  end
         # if map_size(submap) in 1..2 do
         #   require IEx
         #   IEx.pry
@@ -151,7 +173,7 @@ defmodule PassiveSupport.List do
             # [ following | map_permutations(submap, (debug_indentation+1)) ]
         # end
       # end)
-      # IO.puts(indent.("  sublist: #{inspect(sublist)}"))
+      # Logger.debug(indent.("  sublist: #{inspect(sublist)}"))
       # [next | sublist]
     # end)
   # end
