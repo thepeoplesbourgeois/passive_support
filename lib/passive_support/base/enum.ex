@@ -31,12 +31,14 @@ defmodule PassiveSupport.Enum do
   @spec to_map(Enumerable.t, function) :: Map.t
   def to_map(enum, key_function) when is_function(key_function, 1), do:
     enum
-      |> Enum.reduce(%{}, fn (item, map) -> put_in(map[key_function.(item)], item) end)
+      |> Stream.map(fn item -> {key_function.(item), item} end)
+      |> Enum.into(%{})
 
   def to_map(enum, key_function) when is_function(key_function, 2), do:
     enum
       |> Stream.with_index
-      |> Enum.reduce(%{}, fn ({item, item_index}, map) -> put_in(map[key_function.(item, item_index)], item) end)
+      |> Stream.map(fn {item, item_index} -> {key_function.(item, item_index), item} end)
+      |> Enum.into(%{})
 
 
   @doc ~S"""
