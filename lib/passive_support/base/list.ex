@@ -21,6 +21,14 @@ defmodule PassiveSupport.List do
   def compact([head | tail]), do:
     [head | compact(tail)]
 
+  def permutations([]), do: [[]]
+  def permutations(list) do
+    list
+      |> Stream.flat_map(fn next ->
+           Stream.map(permutations(list -- [next]), fn(sublist) -> [next | sublist] end)
+         end)
+  end
+
   @doc ~S"""
   Performs the provided function on every non-nil value while removing nil values.
   If `also_filter_result` is passed, then any nil values that would be returned

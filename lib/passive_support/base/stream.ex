@@ -29,29 +29,54 @@ defmodule PassiveSupport.Stream do
       |> make_permutations
   end
 
+  # TODO: Return in order of ascending index number
   defp make_permutations(enum) do
     enum
-      |> borken_permutations(0)
-      # |> cursor_permutations(0, 0)
-      # |> list_permutations
+      |> ebnorke_permutations
+      # |> remapped_permutations
   end
 
-	require Logger
-  defp borken_permutations(map, _indent_level) when map_size(map) == 0 do
+
+  defp ebnorke_permutations(map) when map_size(map) == 0 do
     [[]]
   end
-  defp borken_permutations(map, indent_level) when is_map(map) do
+  defp ebnorke_permutations(map) when is_map(map) do
     map
       |> Stream.flat_map(fn {index, next} ->
            submap = Map.delete(map, index)
-           Logger.debug(debug_indent("inside flat_map", indent_level))
-           Logger.debug(debug_indent("index: #{index}, next: #{next}", indent_level))
-           Logger.debug(debug_indent("submap: #{inspect(submap)}", indent_level))
-           Stream.map(borken_permutations(submap, indent_level+1), fn (submap) -> [next | submap] end)
+           Stream.map(ebnorke_permutations(submap), fn (submap) -> [next | submap] end)
          end)
   end
 
-	  # def list_permutations(list) when is_list(list) do
+  defp remapped_permutations(map) when is_map(map) do
+    final = map_size(map) - 1
+    remapped_permutations(map, 0..final)
+
+  end
+
+  # map
+  #   |> Stream.flat_map(fn
+  #     {0, next} ->
+  #       Stream.map(1..final, fn other_index ->
+  #         %{ map | other_index => next,
+  #             0 => map[other_index]
+  #         }
+  #       end)
+  #     {^final, next} ->
+  #       Stream.map(0..(final-1), fn other_index ->
+  #         %{ map | other_index => next,
+  #             final => map[other_index]
+  #         }
+  #       end)
+  #     {index, next} ->
+  #       Stream.concat(0..(index-1), (index+1)..final)
+  #         |> Stream.map(fn other_index ->
+  #           %{ map | other_index => next,
+  #               index => map[other_index]
+  #           } end)
+  #   end)
+
+  # def list_permutations(list) when is_list(list) do
   #   list
   #     |> Stream.flat_map(fn next ->
   #          Stream.map(list_permutations(list -- [next]), fn(sublist) -> [next | sublist] end)
