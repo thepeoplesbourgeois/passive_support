@@ -29,6 +29,12 @@ defmodule PassiveSupport.Stream do
       |> make_permutations
   end
 
+  def try_permutations(enum) do
+    enum
+      |> PE.to_map # necessary for fast access
+      |> remapped_permutations
+  end
+
   # TODO: Return in order of ascending index number
   defp make_permutations(enum) do
     enum
@@ -48,11 +54,58 @@ defmodule PassiveSupport.Stream do
          end)
   end
 
-  defp remapped_permutations(map) when is_map(map) do
-    final = map_size(map) - 1
-    remapped_permutations(map, 0..final)
+  # """
+  # remapped_permutations(%{0 => 1, 1 => 2, 2 => 3})
+  # [
+  #   %{0 => 1, 1 => 2, 2 => 3},
+  #   %{0 => 1, 1 => 3, 2 => 2},
+  #   %{0 => 2, 1 => 1, 2 => 3},
+  #   %{0 => 2, 1 => 3, 2 => 1},
+  #   %{0 => 3, 1 => 1, 2 => 2},
+  #   %{0 => 3, 1 => 2, 2 => 1}
+  # ]
+  # """
 
+  # def permutations([]), do: [[]]
+  # def permutations(list) do
+  #   list
+  #     |> Stream.flat_map(fn next ->
+  #          Stream.map(
+  #            permutations(list -- [next]),
+  #            fn(sublist) -> [next | sublist] end
+  #          )
+  #        end)
+  # end
+  defp remapped_permutations(map) when map_size(map) == 0, do: [[]]
+  defp remapped_permutations(map) when is_map(map) do
+    final_index = map_size(map) - 1
+    remapped_permutations(map, 0..final_index, map[0])
+      |> Stream.map(fn permutation -> Enum.map(0..final_index, &(permutation[&1])) end)
   end
+  require IEx
+  defp remapped_permutations(map, same..same, carried) do
+    IEx.pry
+    %{map | same => carried}
+  end
+  defp remapped_permutations(map, _current..final_i = remaining, carried) do
+    remaining
+      |> Stream.flat_map(fn current_i ->
+           streamer = (fn
+             {next_i, next} ->
+               IEx.pry
+               %{ map | current_i => map[next_i], next_i => map[current_i] }
+             %{} = remap ->
+               IEx.pry
+               %{remap | current_i => carried }
+           end)
+
+           Stream.map(
+             remapped_permutations(map, current_i+1..final_i, map[current_i]),
+             streamer
+           )
+         end)
+  end
+
 
   # map
   #   |> Stream.flat_map(fn
