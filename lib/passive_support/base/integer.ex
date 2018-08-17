@@ -1,4 +1,16 @@
 defmodule PassiveSupport.Integer do
+  defguard is_negative(integer)
+    when is_integer(integer)
+    and integer < 0
+
+  defguard is_even(integer)
+    when is_integer(integer)
+    and rem(integer, 2) == 0
+
+  defguard is_odd(integer)
+    when is_integer(integer)
+    and rem(integer, 2) == 1
+
   @doc ~S"""
   Returns the factorial of `n`
 
@@ -16,15 +28,13 @@ defmodule PassiveSupport.Integer do
   @spec factorial(integer) :: integer
   def factorial(0), do: 1
   def factorial(integer)
-  when is_integer(integer)
-  and integer < 0,
+  when is_negative(integer),
     do: -factorial(abs(integer))
   def factorial(integer)
-  when is_integer(integer), do: do_fact([integer])
+  when is_integer(integer), do: do_fact(integer-1, integer)
 
-  defp do_fact([0 | factors]), do: Enum.reduce(factors, &Kernel.*/2)
-  defp do_fact([next | _factors] = factors),
-    do: do_fact([next-1 | factors])
+  defp do_fact(1, factored), do: factored
+  defp do_fact(next, factored), do: do_fact(next-1, factored * next)
 
   @doc ~S"""
   Returns an arbitrary-precision integer representation of `base^factor`,
@@ -35,43 +45,41 @@ defmodule PassiveSupport.Integer do
 
   ## Examples
 
-      iex> Ps.Integer.exp(2, 5)
+      iex> Ps.Integer.exponential(2, 5)
       32
 
-      iex> Ps.Integer.exp(2, 10)
+      iex> Ps.Integer.exponential(2, 10)
       1024
 
-      iex> Ps.Integer.exp(2, 100)
+      iex> Ps.Integer.exponential(2, 100)
       1267650600228229401496703205376
   """
   # TODO: tail-call optimize
-  @spec exp(integer, integer) :: integer
+  @spec exponential(integer, integer) :: integer
 
-  def exp(_, 0), do:
+  def exponential(_, 0), do:
     1
-  def exp(base, factor) when rem(factor, 2) == 1 do
-    recursed_multiplier = exp(base, factor - 1)
-    result = base * recursed_multiplier
-    result
+  def exponential(base, factor) when is_odd(factor) do
+    recursed_factor = exponential(base, factor - 1)
+    base * recursed_factor
   end
-  def exp(base, factor) do
-    recursed_multiplier = exp(base, div(factor, 2))
-    result = recursed_multiplier * recursed_multiplier
-    result
+  def exponential(base, factor) do
+    recursed_factor = exponential(base, div(factor, 2))
+    recursed_factor * recursed_factor
   end
 
-  def tail_exp(base, factor), do: do_tail_exp(factor, [1], base)
+  # def tail_exp(base, factor), do: do_tail_exp(factor, [1], base)
 
-  defp do_tail_exp(0, factors, _base), do: factors |> List.flatten |> Enum.reduce(&Kernel.*/2)
-  defp do_tail_exp(next_factor, [previous | _] = factors, base) when rem(next_factor, 2) == 1 do
-    do_tail_exp(next_factor-1, [next_factor * previous | factors], base)
-  end
-  defp do_tail_exp(next_factor, factors, _base) do
-    factors
-      |> List.flatten
-      |> Enum.reduce(&Kernel.*/2)
+  # defp do_tail_exp(0, factors, _base), do: factors |> List.flatten |> Enum.reduce(&Kernel.*/2)
+  # defp do_tail_exp(next_factor, [previous | _] = factors, base) when rem(next_factor, 2) == 1 do
+  #   do_tail_exp(next_factor-1, [next_factor * previous | factors], base)
+  # end
+  # defp do_tail_exp(next_factor, factors, _base) do
+  #   factors
+  #     |> List.flatten
+  #     |> Enum.reduce(&Kernel.*/2)
 
-  end
+  # end
 
 
   # from https://stackoverflow.com/questions/32024156/how-do-i-raise-a-number-to-a-power-in-elixir#answer-44065965

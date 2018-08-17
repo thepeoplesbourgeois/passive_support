@@ -1,6 +1,5 @@
 defmodule PassiveSupport.List do
   require Logger
-  alias PassiveSupport, as: Ps
 
   @doc ~S"""
   Returns a copy of `list` with any `nil` values removed
@@ -25,7 +24,10 @@ defmodule PassiveSupport.List do
   def permutations(list) do
     list
       |> Stream.flat_map(fn next ->
-           Stream.map(permutations(list -- [next]), fn(sublist) -> [next | sublist] end)
+           Stream.map(
+             permutations(list -- [next]),
+             fn(sublist) -> [next | sublist] end
+           )
          end)
   end
 
