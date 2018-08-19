@@ -2,6 +2,23 @@ defmodule PassiveSupport.List do
   require Logger
 
   @doc ~S"""
+  Returns a new list of `[item | list]`
+  An antonym for `hd`.
+
+  ## Examples
+
+      iex> Ps.List.cons([2,3], 1)
+      [1,2,3]
+      iex> [2,3] |> Ps.List.cons(1) |> Ps.List.cons(0)
+      [0,1,2,3]
+  """
+  @spec cons(list, any()) :: list
+  def cons(list, item)
+  def cons(list, item) when is_list(list) do
+    [item | list]
+  end
+
+  @doc ~S"""
   Returns a copy of `list` with any `nil` values removed
 
   ## Examples
