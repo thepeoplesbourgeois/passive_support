@@ -3,7 +3,7 @@ defmodule PassiveSupport.List do
 
   @doc ~S"""
   Returns a new list of `[item | list]`
-  An antonym for `hd`.
+  An antonym to `hd`.
 
   ## Examples
 
@@ -14,9 +14,8 @@ defmodule PassiveSupport.List do
   """
   @spec cons(list, any()) :: list
   def cons(list, item)
-  def cons(list, item) when is_list(list) do
+  def cons(list, item) when is_list(list), do:
     [item | list]
-  end
 
   @doc ~S"""
   Returns a copy of `list` with any `nil` values removed
@@ -36,17 +35,6 @@ defmodule PassiveSupport.List do
     compact(tail)
   def compact([head | tail]), do:
     [head | compact(tail)]
-
-  def permutations([]), do: [[]]
-  def permutations(list) do
-    list
-      |> Stream.flat_map(fn next ->
-           Stream.map(
-             permutations(list -- [next]),
-             fn(sublist) -> [next | sublist] end
-           )
-         end)
-  end
 
   @doc ~S"""
   Performs the provided function on every non-nil value while removing nil values.
@@ -70,10 +58,10 @@ defmodule PassiveSupport.List do
     []
   def compact_map([nil|tail], fun, options), do:
     compact_map(tail, fun, options)
-  def compact_map([head|tail], fun, also_filter_result: true) do
-    result = fun.(head)
-    if (result != nil), do: [result | compact_map(tail, fun, also_filter_result: true)], else: compact_map(tail, fun, also_filter_result: true)
-  end
+  def compact_map([head|tail], fun, also_filter_result: true), do:
+    if ((result = fun.(head)) != nil),
+      do: [result | compact_map(tail, fun, also_filter_result: true)],
+      else: compact_map(tail, fun, also_filter_result: true)
   def compact_map([head|tail], fun, options), do:
     [fun.(head) | compact_map(tail, fun, options)]
 

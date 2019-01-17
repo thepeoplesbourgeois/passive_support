@@ -73,7 +73,6 @@ defmodule PassiveSupport.Enum do
 
   @doc ~S"""
   Generates a list of all possible permutations of the given list.
-  If `stream: true` is passed,
 
   ## Examples
 

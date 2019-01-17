@@ -25,24 +25,20 @@ defmodule PassiveSupport.Stream do
 
 	def permutations(enum) do
     enum
-      |> PE.to_map # necessary for fast access
+      |> PE.to_map # allows fast access
       |> make_permutations
   end
 
-  def try_permutations(enum) do
-    enum
-      |> PE.to_map # necessary for fast access
-      |> remapped_permutations
-  end
-
-  # TODO: Return in order of ascending index number
   defp make_permutations(enum) do
     enum
       |> ebnorke_permutations
       # |> remapped_permutations
   end
 
-
+  # The Erlang VM uses tries as the underlying structure for
+  # representing maps. As a result, maps containing more than
+  # 31 entries are not enumerated through in the same order
+  # as the entries were added to the map.
   defp ebnorke_permutations(map) when map_size(map) == 0 do
     [[]]
   end
@@ -52,6 +48,13 @@ defmodule PassiveSupport.Stream do
            submap = Map.delete(map, index)
            Stream.map(ebnorke_permutations(submap), fn (submap) -> [next | submap] end)
          end)
+  end
+
+  # TODO: implement `remapped_permutations` to access the enum map via numeric indices
+  def _try_permutations(enum) do
+    enum
+      |> PE.to_map # allows fast access
+      |> remapped_permutations
   end
 
   # """
@@ -66,16 +69,6 @@ defmodule PassiveSupport.Stream do
   # ]
   # """
 
-  # def permutations([]), do: [[]]
-  # def permutations(list) do
-  #   list
-  #     |> Stream.flat_map(fn next ->
-  #          Stream.map(
-  #            permutations(list -- [next]),
-  #            fn(sublist) -> [next | sublist] end
-  #          )
-  #        end)
-  # end
   defp remapped_permutations(map) when map_size(map) == 0, do: [[]]
   defp remapped_permutations(map) when is_map(map) do
     final_index = map_size(map) - 1
@@ -136,7 +129,7 @@ defmodule PassiveSupport.Stream do
   #        end)
   # end
 
-  defp debug_indent(string, indentation), do: [String.duplicate("  ", indentation), string]
+  defp _debug_indent(string, indentation), do: [String.duplicate("  ", indentation), string]
 
   # defp cursor_permutations(map, _index, _indentation) when map_size(map) == 0, do: [[]]
   # defp cursor_permutations(map, first_index, debug_level) do
