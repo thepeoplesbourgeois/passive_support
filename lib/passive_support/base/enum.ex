@@ -88,7 +88,7 @@ defmodule PassiveSupport.Enum do
         ["hey!", "ho", "hi"]
       ]
   """
-  @spec permutations([any]) :: [[any]]
+  @spec permutations(Enumerable.t) :: [[any]]
   def permutations(enum), do: PassiveSupport.Stream.permutations(enum) |> Enum.to_list
 
   @doc ~S"""
@@ -102,6 +102,7 @@ defmodule PassiveSupport.Enum do
       iex>"hello world" |> String.graphemes |> Enum.tally
       %{"h" => 1, "e" => 1, "l" => 3, "o" => 2, " " => 1, "w" => 1, "r" => 1, "d" => 1}
   """
+  @spec tally(Enumerable.t) :: Map.t
   def tally(enumerable) do
     Enum.reduce(enumerable, %{}, fn 
       item, tally ->
