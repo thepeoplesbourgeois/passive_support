@@ -92,7 +92,8 @@ defmodule PassiveSupport.Enum do
   def permutations(enum), do: PassiveSupport.Stream.permutations(enum) |> Enum.to_list
 
   @doc ~S"""
-  Returns a map of the number of instances of each member of the enumerable.
+  Returns a map with each unique member of the enumerable as its keys, 
+  and the number of times each appears in the enumerable as their values.
 
   ## Examples
   
