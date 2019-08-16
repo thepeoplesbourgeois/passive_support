@@ -1,3 +1,5 @@
+
+
 defmodule PassiveSupport.Enum do
   require Logger
   @doc """
@@ -88,4 +90,23 @@ defmodule PassiveSupport.Enum do
   """
   @spec permutations([any]) :: [[any]]
   def permutations(enum), do: PassiveSupport.Stream.permutations(enum) |> Enum.to_list
+
+  @doc ~S"""
+  Returns a map of the number of instances of each member of the enumerable.
+
+  ## Examples
+  
+      iex>Ps.Enum.tally([1, 1, 5, 5, 5])
+      %{1 => 2, 5 => 3} 
+ 
+      iex>"hello world" |> String.graphemes |> Enum.tally
+      %{"h" => 1, "e" => 1, "l" => 3, "o" => 2, " " => 1, "w" => 1, "r" => 1, "d" => 1}
+  """
+  def tally(enumerable) do
+    Enum.reduce(enumerable, %{}, fn 
+      item, tally ->
+        count = tally[item] || 0
+        put_in(tally[item], count+1)
+    end)
+  end
 end
