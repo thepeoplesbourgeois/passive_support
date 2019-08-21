@@ -1,5 +1,4 @@
 defmodule PassiveSupport.Enum do
-  require Logger
   @doc """
   Converts an enumerable to a `Map`, using the index of
   each item as the item's key.
@@ -88,4 +87,27 @@ defmodule PassiveSupport.Enum do
   """
   @spec permutations([any]) :: [[any]]
   def permutations(enum), do: PassiveSupport.Stream.permutations(enum) |> Enum.to_list
+
+    @doc ~S"""
+  Returns a map with each unique member of the enumerable as its keys,
+  and the number of times each appears in the enumerable as their values.
+
+  ## Examples
+
+      iex>PassiveSupport.Enum.tally([1, 1, 5, 5, 5])
+      %{1 => 2, 5 => 3}
+
+      iex>"hello world" |> String.graphemes |> PassiveSupport.Enum.tally
+      %{"h" => 1, "e" => 1, "l" => 3, "o" => 2, " " => 1, "w" => 1, "r" => 1, "d" => 1}
+
+      iex>'hello' |> PassiveSupport.Enum.tally
+      %{?h => 1, ?e => 1, ?l => 2, ?o => 1}
+  """
+  def tally(enumerable) do
+    Enum.reduce(enumerable, %{}, fn
+      item, tallies ->
+        count = tallies[item] || 0
+        put_in(tallies[item], count+1)
+    end)
+  end
 end
