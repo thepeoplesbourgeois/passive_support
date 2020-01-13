@@ -1,3 +1,5 @@
+
+
 defmodule PassiveSupport.Enum do
   @doc """
   Converts an enumerable to a `Map`, using the index of
@@ -85,10 +87,10 @@ defmodule PassiveSupport.Enum do
         ["hey!", "ho", "hi"]
       ]
   """
-  @spec permutations([any]) :: [[any]]
+  @spec permutations(Enumerable.t) :: [[any]]
   def permutations(enum), do: PassiveSupport.Stream.permutations(enum) |> Enum.to_list
 
-    @doc ~S"""
+  @doc ~S"""
   Returns a map with each unique member of the enumerable as its keys,
   and the number of times each appears in the enumerable as their values.
 
