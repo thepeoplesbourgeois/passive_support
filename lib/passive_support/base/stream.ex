@@ -1,5 +1,5 @@
 defmodule PassiveSupport.Stream do
-	alias PassiveSupport.Enum, as: PE
+  alias PassiveSupport.Enum, as: PE
 
   @doc ~S"""
   Generates a stream of all possible permutations of the given list.
@@ -34,13 +34,14 @@ defmodule PassiveSupport.Stream do
   defp make_permutations(enum) do
     enum
       |> ebnorke_permutations
-      # |> remapped_permutations
+      # |> _remapped_permutations
   end
 
-  # The Erlang VM uses tries as the underlying structure for
-  # representing maps. As a result, maps containing more than
-  # 31 entries are not enumerated through in the same order
-  # as the entries were added to the map.
+  # The Erlang VM uses tries as the underlying structure to
+  # represent maps. As a result, maps longer than 31 entries
+  # are not processed in the same order as the entries were
+  # added to the map. Therefore, this implementation is "broken"
+  # due to the order in which it returns entries
   defp ebnorke_permutations(map) when map_size(map) == 0 do
     [[]]
   end
@@ -52,37 +53,27 @@ defmodule PassiveSupport.Stream do
          end)
   end
 
-  # TODO: implement `remapped_permutations` to access the enum map via numeric indices
+  # TODO: implement `_remapped_permutations` to access entries in the
+  #       enum map via numeric indices
   def _try_permutations(enum) do
     enum
       |> PE.to_map # allows fast access
-      |> remapped_permutations
+      |> _remapped_permutations
   end
 
-  # """
-  # remapped_permutations(%{0 => 1, 1 => 2, 2 => 3})
-  # [
-  #   %{0 => 1, 1 => 2, 2 => 3},
-  #   %{0 => 1, 1 => 3, 2 => 2},
-  #   %{0 => 2, 1 => 1, 2 => 3},
-  #   %{0 => 2, 1 => 3, 2 => 1},
-  #   %{0 => 3, 1 => 1, 2 => 2},
-  #   %{0 => 3, 1 => 2, 2 => 1}
-  # ]
-  # """
-
-  defp remapped_permutations(map) when map_size(map) == 0, do: [[]]
-  defp remapped_permutations(map) when is_map(map) do
+  defp _remapped_permutations(map) when map_size(map) == 0, do: [[]]
+  defp _remapped_permutations(map) when is_map(map) do
     final_index = map_size(map) - 1
-    remapped_permutations(map, 0..final_index, map[0])
+    _remapped_permutations(map, 0..final_index, map[0])
       |> Stream.map(fn permutation -> Enum.map(0..final_index, &(permutation[&1])) end)
   end
-  require IEx
-  defp remapped_permutations(map, same..same, carried) do
+  defp _remapped_permutations(map, same..same, carried) do
+    require IEx
     IEx.pry
     %{map | same => carried}
   end
-  defp remapped_permutations(map, _current..final_i = remaining, carried) do
+  defp _remapped_permutations(map, _current..final_i = remaining, carried) do
+    require IEx
     remaining
       |> Stream.flat_map(fn current_i ->
            streamer = (fn
@@ -95,56 +86,9 @@ defmodule PassiveSupport.Stream do
            end)
 
            Stream.map(
-             remapped_permutations(map, current_i+1..final_i, map[current_i]),
+             _remapped_permutations(map, current_i+1..final_i, map[current_i]),
              streamer
            )
          end)
   end
-
-
-  # map
-  #   |> Stream.flat_map(fn
-  #     {0, next} ->
-  #       Stream.map(1..final, fn other_index ->
-  #         %{ map | other_index => next,
-  #             0 => map[other_index]
-  #         }
-  #       end)
-  #     {^final, next} ->
-  #       Stream.map(0..(final-1), fn other_index ->
-  #         %{ map | other_index => next,
-  #             final => map[other_index]
-  #         }
-  #       end)
-  #     {index, next} ->
-  #       Stream.concat(0..(index-1), (index+1)..final)
-  #         |> Stream.map(fn other_index ->
-  #           %{ map | other_index => next,
-  #               index => map[other_index]
-  #           } end)
-  #   end)
-
-  # def list_permutations(list) when is_list(list) do
-  #   list
-  #     |> Stream.flat_map(fn next ->
-  #          Stream.map(list_permutations(list -- [next]), fn(sublist) -> [next | sublist] end)
-  #        end)
-  # end
-
-  defp _debug_indent(string, indentation), do: [String.duplicate("  ", indentation), string]
-
-  # defp cursor_permutations(map, _index, _indentation) when map_size(map) == 0, do: [[]]
-  # defp cursor_permutations(map, first_index, debug_level) do
-  #   first_index..(map_size(map)-1) |> Stream.flat_map(fn _ ->
-  #     {next, submap} = Map.pop(map, first_index)
-  #     Logger.debug(debug_indent("inside flat_map", debug_level))
-  #     Logger.debug(debug_indent("map: #{inspect(map)}", debug_level))
-  #     Logger.debug(debug_indent("index: #{inspect(first_index)}", debug_level))
-
-  #     Stream.map(cursor_permutations(submap, first_index+1, debug_level+1), fn sublist ->
-  #       Logger.debug(debug_indent("sublist: #{inspect(sublist)}", debug_level))
-  #       [next | sublist]
-  #     end)
-  #   end)
-  # end
 end
