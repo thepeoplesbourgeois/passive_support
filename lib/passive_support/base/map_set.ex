@@ -1,6 +1,4 @@
 defmodule PassiveSupport.MapSet do
-  @type set :: MapSet.t
-
   @doc ~S"""
   Adds `element` to `set` if it isn't already a member, and deletes it if it is.
 
@@ -13,8 +11,8 @@ defmodule PassiveSupport.MapSet do
       #MapSet<["barbecue sauce", "ketchup", "mustard"]>
 
   """
-  @spec toggle(set, any) :: set
-  def toggle(%Elixir.MapSet{} = set, element), do:
+  @spec toggle(MapSet.t, any) :: MapSet.t
+  def toggle(%MapSet{} = set, element), do:
     if MapSet.member?(set, element),
       do: MapSet.delete(set, element),
       else: MapSet.put(set, element)

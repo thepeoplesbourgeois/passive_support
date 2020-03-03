@@ -98,6 +98,7 @@ defprotocol PassiveSupport.Blank do
 end
 
 defimpl PassiveSupport.Blank, for: BitString do
+  @spec blank?(binary) :: boolean
   def blank?(<<>>), do:
     true
   def blank?(""<>string), do:
@@ -105,21 +106,25 @@ defimpl PassiveSupport.Blank, for: BitString do
 end
 
 defimpl PassiveSupport.Blank, for: Map do
+  @spec blank?(Map.t) :: boolean
   def blank?(map), do:
     map == %{}
 end
 
 defimpl PassiveSupport.Blank, for: Tuple do
+  @spec blank?(tuple) :: boolean
   def blank?(tuple), do:
     tuple == {}
 end
 
 defimpl PassiveSupport.Blank, for: List do
+  @spec blank?(list) :: boolean
   def blank?(list), do:
     list == []
 end
 
 defimpl PassiveSupport.Blank, for: Any do
+  @spec blank?(any) :: boolean
   def blank?(%MapSet{}), do:
     true
 
