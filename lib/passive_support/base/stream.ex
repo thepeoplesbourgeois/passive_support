@@ -60,6 +60,7 @@ defmodule PassiveSupport.Stream do
       |> PE.to_map # allows fast access
       |> _remapped_permutations
   end
+  require IEx
 
   defp _remapped_permutations(map) when map_size(map) == 0, do: [[]]
   defp _remapped_permutations(map) when is_map(map) do
@@ -68,12 +69,10 @@ defmodule PassiveSupport.Stream do
       |> Stream.map(fn permutation -> Enum.map(0..final_index, &(permutation[&1])) end)
   end
   defp _remapped_permutations(map, same..same, carried) do
-    require IEx
     IEx.pry
     %{map | same => carried}
   end
   defp _remapped_permutations(map, _current..final_i = remaining, carried) do
-    require IEx
     remaining
       |> Stream.flat_map(fn current_i ->
            streamer = (fn

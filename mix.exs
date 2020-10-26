@@ -7,8 +7,12 @@ defmodule PassiveSupport.Mixfile do
      elixir: "~> 1.6",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps()]
+     deps: deps(),
+     xref: xref(Mix.env)]
   end
+
+  defp xref(env) when env in [:dev, :test], do: [exclude: [IEx, IEx.Pry]]
+  defp xref(_), do: []
 
   # Configuration for the OTP application
   #
@@ -28,6 +32,8 @@ defmodule PassiveSupport.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [
+      {:benchee, "~> 0.13.2", only: :dev}
+    ]
   end
 end
