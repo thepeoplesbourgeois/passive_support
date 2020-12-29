@@ -1,4 +1,6 @@
 defmodule PassiveSupport.MapSet do
+  @dialyzer {:nowarn_function, toggle: 2}
+
   @doc ~S"""
   Adds `element` to `set` if it isn't already a member, and deletes it if it is.
 
