@@ -8,13 +8,13 @@ defmodule PassiveSupport.String do
 
   ## Examples
 
-      iex> Ps.String.match("footwear, fun, and fondue", "((f[ou])[no]).+")
+      iex> match("footwear, fun, and fondue", "((f[ou])[no]).+")
       ["footwear, fun, and fondue", "foo", "fo"]
 
-      iex> Ps.String.match("fööd!", "öö")
+      iex> match("fööd!", "öö")
       ["öö"]
 
-      iex> Ps.String.match("footwear, fun, and fondue", ~r/((f[ou])[no]).+/U)
+      iex> match("footwear, fun, and fondue", ~r/((f[ou])[no]).+/U)
       ["foot", "foo", "fo"]
   """
   @spec match(String.t(), Regex.t() | String.t(), [keyword]) :: [String.t()]
@@ -34,13 +34,13 @@ defmodule PassiveSupport.String do
 
   ## Examples
 
-      iex> Ps.String.scan("footwear, fun, and fondue", "((f[ou])[no]).+")
+      iex> scan("footwear, fun, and fondue", "((f[ou])[no]).+")
       [["footwear, fun, and fondue", "foo", "fo"]]
 
-      iex> Ps.String.scan("fööd!", "öö")
+      iex> scan("fööd!", "öö")
       [["öö"]]
 
-      iex> Ps.String.scan("footwear, fun, and fondue", ~r/((f[ou])[no]).+/U)
+      iex> scan("footwear, fun, and fondue", ~r/((f[ou])[no]).+/U)
       [["foot", "foo", "fo"], ["fun,", "fun", "fu"], ["fond", "fon", "fo"]]
   """
   @spec scan(String.t(), Regex.t() | String.t(), keyword) :: [[String.t()]]
@@ -67,23 +67,23 @@ defmodule PassiveSupport.String do
 
   ## Examples
 
-      iex> Ps.String.length_split("hello world!", 3)
+      iex> length_split("hello world!", 3)
       ["hel", "lo ", "wor", "ld!"]
 
-      iex> Ps.String.length_split("hello world!", 5)
+      iex> length_split("hello world!", 5)
       ["hello", " worl", "d!"]
 
-      iex> Ps.String.length_split("hello world!", 5, first_split: true)
+      iex> length_split("hello world!", 5, first_split: true)
       "hello"
 
-      iex> Ps.String.length_split("Life, the universe, and everything... is pattern-matchable", [10, 9, 7])
+      iex> length_split("Life, the universe, and everything... is pattern-matchable", [10, 9, 7])
       [
         ["Life, the ", "universe,", " and ev"],
         ["erything..", ". is patt", "ern-mat"],
         ["chable"]
       ]
 
-      iex> Ps.String.length_split("Life, the universe, and everything... is pattern-matchable", [10, 9, 7], first_split: true)
+      iex> length_split("Life, the universe, and everything... is pattern-matchable", [10, 9, 7], first_split: true)
       ["Life, the ", "universe,", " and ev"]
   """
   @spec length_split(String.t(), integer | [integer], first_split: boolean) ::
@@ -130,16 +130,16 @@ defmodule PassiveSupport.String do
 
   ## Examples
 
-      iex> Ps.String.safe_existing_atom("ok")
+      iex> safe_existing_atom("ok")
       {:ok, :ok}
 
-      iex> Ps.String.safe_existing_atom("not_particularly_ok")
+      iex> safe_existing_atom("not_particularly_ok")
       {:error, nil}
 
-      iex> Ps.String.safe_existing_atom("not_particularly_ok", :but_this_is)
+      iex> safe_existing_atom("not_particularly_ok", :but_this_is)
       {:error, :but_this_is}
 
-      iex> Ps.String.safe_existing_atom("ok", "not_an_atom")
+      iex> safe_existing_atom("ok", "not_an_atom")
       ** (FunctionClauseError) no function clause matching in PassiveSupport.String.safe_existing_atom/2
   """
   @spec safe_existing_atom(String.t, atom) :: {:ok | :error, atom}

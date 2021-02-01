@@ -10,29 +10,29 @@ defmodule PassiveSupport.Range do
 
   ## Examples
 
-      iex> Ps.Range.includes?(1..5, 3)
+      iex> includes?(1..5, 3)
       true
-      iex> Ps.Range.includes?(1..5, 5)
+      iex> includes?(1..5, 5)
       true
-      iex> Ps.Range.includes?(1..5, :math.pi)
+      iex> includes?(1..5, :math.pi)
       true
-      iex> Ps.Range.includes?(1..5, :no)
+      iex> includes?(1..5, :no)
       false
-      iex> Ps.Range.includes?(1..5, nil)
-      false
-
-      iex> Ps.Range.includes?(1..5, 2..4)
-      true
-      iex> Ps.Range.includes?(1..5, 4..6)
-      false
-      iex> Ps.Range.includes?(1..5, 0..2)
+      iex> includes?(1..5, nil)
       false
 
-      iex> Ps.Range.includes?(5..1, 3)
+      iex> includes?(1..5, 2..4)
       true
-      iex> Ps.Range.includes?(5..1, 2..4)
+      iex> includes?(1..5, 4..6)
+      false
+      iex> includes?(1..5, 0..2)
+      false
+
+      iex> includes?(5..1, 3)
       true
-      iex> Ps.Range.includes?(5..1, 4..2)
+      iex> includes?(5..1, 2..4)
+      true
+      iex> includes?(5..1, 4..2)
       true
   """
   @spec includes?(Range.t, any) :: boolean
@@ -50,27 +50,27 @@ defmodule PassiveSupport.Range do
 
   ## Examples
 
-      iex> Ps.Range.overlaps?(1..5, 4..6)
+      iex> overlaps?(1..5, 4..6)
       true
-      iex> Ps.Range.overlaps?(4..6, 1..5)
+      iex> overlaps?(4..6, 1..5)
       true
-      iex> Ps.Range.overlaps?(1..5, 6..7)
+      iex> overlaps?(1..5, 6..7)
       false
 
-      iex> Ps.Range.overlaps?(1..5, 2..4)
+      iex> overlaps?(1..5, 2..4)
       true
-      iex> Ps.Range.overlaps?(2..4, 1..5)
+      iex> overlaps?(2..4, 1..5)
       true
 
-      iex> Ps.Range.overlaps?(5..1, 4..6)
+      iex> overlaps?(5..1, 4..6)
       false
-      iex> Ps.Range.overlaps?(4..6, 5..1)
+      iex> overlaps?(4..6, 5..1)
       false
-      iex> Ps.Range.overlaps?(1..5, 6..4)
+      iex> overlaps?(1..5, 6..4)
       false
-      iex> Ps.Range.overlaps?(6..4, 1..5)
+      iex> overlaps?(6..4, 1..5)
       false
-      iex> Ps.Range.overlaps?(6..4, 5..1)
+      iex> overlaps?(6..4, 5..1)
       true
   """
   @spec overlaps?(Range.t, Range.t) :: boolean
@@ -88,20 +88,20 @@ defmodule PassiveSupport.Range do
 
   ## Examples
 
-      iex> Ps.Range.adjacent?(1..5, 6..10)
+      iex> adjacent?(1..5, 6..10)
       true
-      iex> Ps.Range.adjacent?(6..10, 1..5)
+      iex> adjacent?(6..10, 1..5)
       true
-      iex> Ps.Range.adjacent?(10..6, 5..1)
+      iex> adjacent?(10..6, 5..1)
       true
-      iex> Ps.Range.adjacent?(5..1, 10..6)
+      iex> adjacent?(5..1, 10..6)
       true
 
-      iex> Ps.Range.adjacent?(0..4, 6..10)
+      iex> adjacent?(0..4, 6..10)
       false
-      iex> Ps.Range.adjacent?(6..10, 0..4)
+      iex> adjacent?(6..10, 0..4)
       false
-      iex> Ps.Range.adjacent?(10..6, 1..5)
+      iex> adjacent?(10..6, 1..5)
       false
   """
   @spec adjacent?(Range.t, Range.t) :: boolean
@@ -116,19 +116,19 @@ defmodule PassiveSupport.Range do
 
   ## Examples
 
-      iex> Ps.Range.join(1..5, 6..10)
+      iex> join(1..5, 6..10)
       1..10
-      iex> Ps.Range.join(1..5, 4..8)
+      iex> join(1..5, 4..8)
       1..8
-      iex> Ps.Range.join(10..20, 5..15)
+      iex> join(10..20, 5..15)
       5..20
-      iex> Ps.Range.join(1..10, 2..8)
+      iex> join(1..10, 2..8)
       1..10
 
-      iex> Ps.Range.join(1..2, 5..10)
+      iex> join(1..2, 5..10)
       ** (ArgumentError) Cannot join 1..2 and 5..10
 
-      iex> Ps.Range.join(1..5, 10..5)
+      iex> join(1..5, 10..5)
       ** (ArgumentError) Cannot join 1..5 and 10..5
   """
   @spec join(Range.t, Range.t) :: Range.t
@@ -147,11 +147,11 @@ defmodule PassiveSupport.Range do
 
   ## Examples
 
-      iex> Ps.Range.size(1..5)
+      iex> size(1..5)
       5
-      iex> Ps.Range.size(0..5)
+      iex> size(0..5)
       6
-      iex> Ps.Range.size(5..0)
+      iex> size(5..0)
       6
   """
   @spec size(Range.t) :: integer
@@ -169,9 +169,9 @@ defmodule PassiveSupport.Range do
   ## Examples
 
 
-      iex> Ps.Range.first(0..5)
+      iex> first(0..5)
       0
-      iex> Ps.Range.first(5..0)
+      iex> first(5..0)
       5
   """
   @spec first(Range.t) :: integer
@@ -183,9 +183,9 @@ defmodule PassiveSupport.Range do
 
   ## Examples
 
-      iex> Ps.Range.last(0..5)
+      iex> last(0..5)
       5
-      iex> Ps.Range.last(5..0)
+      iex> last(5..0)
       0
   """
   @spec last(Range.t) :: integer
@@ -197,9 +197,9 @@ defmodule PassiveSupport.Range do
 
   ## Examples
 
-      iex> Ps.Range.max(0..5)
+      iex> max(0..5)
       5
-      iex> Ps.Range.max(5..0)
+      iex> max(5..0)
       5
   """
   def max(start..finish) when finish < start, do:
@@ -212,9 +212,9 @@ defmodule PassiveSupport.Range do
 
   ## Examples
 
-      iex> Ps.Range.min(0..5)
+      iex> min(0..5)
       0
-      iex> Ps.Range.min(5..0)
+      iex> min(5..0)
       0
   """
   def min(start..finish) when finish < start, do:
@@ -228,9 +228,9 @@ defmodule PassiveSupport.Range do
 
   ## Examples
 
-      iex> Ps.Range.next_page(1..10)
+      iex> next_page(1..10)
       11..20
-      iex> Ps.Range.next_page(10..1)
+      iex> next_page(10..1)
       0..-9
   """
   @spec next_page(Range.t) :: Range.t
@@ -245,9 +245,9 @@ defmodule PassiveSupport.Range do
 
   ## Examples
 
-      iex> Ps.Range.prev_page(1..10)
+      iex> prev_page(1..10)
       -9..0
-      iex> Ps.Range.prev_page(10..1)
+      iex> prev_page(10..1)
       20..11
   """
   @spec prev_page(Range.t) :: Range.t

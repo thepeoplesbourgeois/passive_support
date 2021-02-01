@@ -6,7 +6,7 @@ defmodule PassiveSupport.Map do
 
     ## Examples
 
-        iex> Ps.Map.stringify_keys(%{7 => 8, "hey" => "ha", hi: "ho"})
+        iex> stringify_keys(%{7 => 8, "hey" => "ha", hi: "ho"})
         %{"7" => 8, "hey" => "ha", "hi" => "ho"}
     """
   def stringify_keys(%{} = map), do:
@@ -22,9 +22,9 @@ defmodule PassiveSupport.Map do
     ## Examples
 
         iex> [:oh, :yay] # existing keys
-        iex> Ps.Map.atomize_keys!(%{"oh" => "ooh", 'yay' => 'yaaay'})
+        iex> atomize_keys!(%{"oh" => "ooh", 'yay' => 'yaaay'})
         %{oh: "ooh", yay: 'yaaay'}
-        iex> Ps.Map.atomize_keys!(%{"oh" => "ooh", "noo" => "noooo"})
+        iex> atomize_keys!(%{"oh" => "ooh", "noo" => "noooo"})
         ** (ArgumentError) argument error
     """
   def atomize_keys!(%{} = map), do:
@@ -46,9 +46,9 @@ defmodule PassiveSupport.Map do
     ## Examples
 
         iex> [:oh, :yay] # existing keys
-        iex> Ps.Map.safe_atomize_keys(%{"oh" => "ooh", 'yay' => 'yaaay'})
+        iex> safe_atomize_keys(%{"oh" => "ooh", 'yay' => 'yaaay'})
         %{oh: "ooh", yay: 'yaaay'}
-        iex> Ps.Map.safe_atomize_keys(%{"oh" => "ooh", "noo" => "noooo"})
+        iex> safe_atomize_keys(%{"oh" => "ooh", "noo" => "noooo"})
         %{oh: "ooh"}
     """
   def safe_atomize_keys(%{} = map),

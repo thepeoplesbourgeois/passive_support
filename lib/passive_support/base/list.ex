@@ -7,9 +7,9 @@ defmodule PassiveSupport.List do
 
   ## Examples
 
-      iex> Ps.List.cons([2,3], 1)
+      iex> cons([2,3], 1)
       [1,2,3]
-      iex> [2,3] |> Ps.List.cons(1) |> Ps.List.cons(0)
+      iex> [2,3] |> cons(1) |> cons(0)
       [0,1,2,3]
   """
   @spec cons(list, any()) :: list
@@ -22,10 +22,10 @@ defmodule PassiveSupport.List do
 
   ## Examples
 
-      iex> Ps.List.compact([1,nil,3])
+      iex> compact([1,nil,3])
       [1, 3]
 
-      iex> Ps.List.compact([false, nil, nil, "hi"])
+      iex> compact([false, nil, nil, "hi"])
       [false, "hi"]
   """
   @spec compact(list) :: list
@@ -43,13 +43,13 @@ defmodule PassiveSupport.List do
 
   ## Examples
 
-      iex> Ps.List.compact_map([1,2,nil,4], &(&1 * 2))
+      iex> compact_map([1,2,nil,4], &(&1 * 2))
       [2,4,8]
 
-      iex> Ps.List.compact_map([nil, "   ", {}, 0], &Ps.Item.presence/1, also_filter_result: true)
+      iex> compact_map([nil, "   ", {}, 0], &PassiveSupport.Item.presence/1, also_filter_result: true)
       [0]
 
-      iex> Ps.List.compact_map([nil, false, 0], &(&1), also_filter_result: true)
+      iex> compact_map([nil, false, 0], &(&1), also_filter_result: true)
       [false, 0]
   """
   @spec compact_map(list, fun, [also_filter_result: boolean]) :: list

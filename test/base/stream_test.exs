@@ -1,6 +1,4 @@
 defmodule PassiveSupport.StreamTest do
-  alias PassiveSupport, as: Ps
-
   use ExUnit.Case, async: true
-  doctest Ps.Stream
+  doctest PassiveSupport.Stream, import: true
 end

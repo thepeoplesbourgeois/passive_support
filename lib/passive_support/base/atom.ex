@@ -6,19 +6,17 @@ defmodule PassiveSupport.Atom do
 
   ## Examples
 
-      iex> Ps.Atom.exists?(:foo)
+      iex> exists?(:foo)
       true
-      iex> Ps.Atom.exists?("yes")
+      iex> exists?("yes")
       true
-      iex> Ps.Atom.exists?("bar")
+      iex> exists?("bar")
       false
   """
   def exists?(atom) when is_atom(atom), do: true
   def exists?(string) when is_binary(string) do
-    try do
-      String.to_existing_atom(string) && true
-    rescue
-      ArgumentError -> false
-    end
+    String.to_existing_atom(string) && true
+  rescue
+    ArgumentError -> false
   end
 end

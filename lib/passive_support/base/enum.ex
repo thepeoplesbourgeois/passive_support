@@ -7,10 +7,10 @@ defmodule PassiveSupport.Enum do
 
   ## Examples
 
-      iex> Ps.Enum.to_map(["hello", "world", "how", "are", "you"])
+      iex> to_map(["hello", "world", "how", "are", "you"])
       %{0 => "hello", 1 => "world", 2 => "how", 3 => "are", 4 => "you"}
 
-      iex> Ps.Enum.to_map(["Elixir", "is",  "cool"])
+      iex> to_map(["Elixir", "is",  "cool"])
       %{0 => "Elixir", 1 => "is", 2 => "cool"}
   """
   @spec to_map(Enumerable.t) :: Map.t
@@ -24,10 +24,10 @@ defmodule PassiveSupport.Enum do
 
   ## Examples
 
-      iex> Ps.Enum.to_map(["Elixir", "is",  "cool"], &String.reverse/1)
+      iex> to_map(["Elixir", "is",  "cool"], &String.reverse/1)
       %{"si" => "is", "looc" => "cool", "rixilE" => "Elixir"}
 
-      iex> Ps.Enum.to_map(["hello", "world", "how", "are", "you"], fn (_, index) -> index end)
+      iex> to_map(["hello", "world", "how", "are", "you"], fn (_, index) -> index end)
       %{0 => "hello", 1 => "world", 2 => "how", 3 => "are", 4 => "you"}
   """
   @spec to_map(Enumerable.t, function) :: Map.t
@@ -54,18 +54,18 @@ defmodule PassiveSupport.Enum do
   ## Examples
 
       iex> test_list = [1, 2, 3]
-      ...> Ps.Enum.none?(test_list, &(&1 == 0))
+      ...> none?(test_list, &(&1 == 0))
       true
-      ...> Ps.Enum.none?([0 | test_list], &(&1 == 0))
+      ...> none?([0 | test_list], &(&1 == 0))
       false
 
-      iex> Ps.Enum.none?([])
+      iex> none?([])
       true
 
-      iex> Ps.Enum.none?([nil])
+      iex> none?([nil])
       true
 
-      iex> Ps.Enum.none?([true])
+      iex> none?([true])
       false
   """
   @spec none?(Enumerable.t, function) :: boolean
@@ -77,7 +77,7 @@ defmodule PassiveSupport.Enum do
 
   ## Examples
 
-      iex> Ps.Enum.permutations(~W"hi ho hey!")
+      iex> permutations(~W"hi ho hey!")
       [
         ["hi", "ho", "hey!"],
         ["hi", "hey!", "ho"],
@@ -96,13 +96,13 @@ defmodule PassiveSupport.Enum do
 
   ## Examples
 
-      iex>PassiveSupport.Enum.tally([1, 1, 5, 5, 5])
+      iex>tally([1, 1, 5, 5, 5])
       %{1 => 2, 5 => 3}
 
-      iex>"hello world" |> String.graphemes |> PassiveSupport.Enum.tally
+      iex>"hello world" |> String.graphemes |> tally
       %{"h" => 1, "e" => 1, "l" => 3, "o" => 2, " " => 1, "w" => 1, "r" => 1, "d" => 1}
 
-      iex>'hello' |> PassiveSupport.Enum.tally
+      iex>'hello' |> tally
       %{?h => 1, ?e => 1, ?l => 2, ?o => 1}
   """
   def tally(enumerable) do
