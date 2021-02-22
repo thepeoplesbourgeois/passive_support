@@ -127,8 +127,8 @@ defmodule PassiveSupport.Item do
 
   defp dig_on(nil, _), do: nil
   defp dig_on(item, []), do: item
-  defp dig_on(item, [next | path]) when is_atom(next), do: dig_on(item[next], path)
-  defp dig_on(item, [next | path]) when is_binary(next), do: dig_on(item[next], path)
+  defp dig_on(item, path) when is_struct(item), do: dig_on(Map.from_struct(item), path)
+  defp dig_on(item, [next | path]) when is_atom(next) or is_binary(next), do: dig_on(item[next], path)
   defp dig_on(item, [next | path]) when is_integer(next) and is_list(item),
     do: item
      |> List.pop_at(next)
