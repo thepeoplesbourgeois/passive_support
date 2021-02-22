@@ -149,4 +149,26 @@ defmodule PassiveSupport.String do
   rescue
     ArgumentError -> {:error, default}
   end
+
+  @doc """
+  Returns a copy of `string` with a newline removed from the end.
+
+  If there is no newline at the end of `string`, then it is returned unchanged
+
+  ## Examples
+
+      iex> chomp("hello world!\\n")
+      "hello world!"
+
+      iex> chomp("hello\\nworld!")
+      "hello\\nworld!"
+
+      iex> chomp("multiline!\\n\\n")
+      "multiline!\\n"
+
+      iex> chomp("single line!")
+      "single line!"
+  """
+  @spec chomp(String.t) :: String.t
+  def chomp(string), do: String.replace(string, ~r/\n$/, "", global: false)
 end
