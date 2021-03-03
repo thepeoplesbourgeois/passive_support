@@ -14,9 +14,7 @@ defmodule PassiveSupport.Enum do
       %{0 => "Elixir", 1 => "is", 2 => "cool"}
   """
   @spec to_map(Enumerable.t) :: Map.t
-  def to_map(enum), do:
-    enum
-      |> to_map(fn (_item, item_index) -> item_index end)
+  def to_map(enum), do: to_map(enum, fn (_item, item_index) -> item_index end)
 
   @doc ~S"""
   Not to be confused with Enum.map/2, returns a `Map` with the key for each
@@ -73,11 +71,11 @@ defmodule PassiveSupport.Enum do
   def none?(enum, fun), do: !Enum.any?(enum, fun)
 
   @doc ~S"""
-  Generates a list of all possible permutations of the given list.
+  Generates a list of all possible permutations of the given enumerable.
 
   ## Examples
 
-      iex> permutations(~W"hi ho hey!")
+      iex> permutations(~w"hi ho hey!")
       [
         ["hi", "ho", "hey!"],
         ["hi", "hey!", "ho"],
@@ -89,27 +87,4 @@ defmodule PassiveSupport.Enum do
   """
   @spec permutations(Enumerable.t) :: [[any]]
   def permutations(enum), do: PassiveSupport.Stream.permutations(enum) |> Enum.to_list
-
-  @doc ~S"""
-  Returns a map with each unique member of the enumerable as its keys,
-  and the number of times each appears in the enumerable as their values.
-
-  ## Examples
-
-      iex>tally([1, 1, 5, 5, 5])
-      %{1 => 2, 5 => 3}
-
-      iex>"hello world" |> String.graphemes |> tally
-      %{"h" => 1, "e" => 1, "l" => 3, "o" => 2, " " => 1, "w" => 1, "r" => 1, "d" => 1}
-
-      iex>'hello' |> tally
-      %{?h => 1, ?e => 1, ?l => 2, ?o => 1}
-  """
-  def tally(enumerable) do
-    Enum.reduce(enumerable, %{}, fn
-      item, tallies ->
-        count = tallies[item] || 0
-        put_in(tallies[item], count+1)
-    end)
-  end
 end

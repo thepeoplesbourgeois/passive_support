@@ -37,14 +37,16 @@ defmodule PassiveSupport.Integer do
 
       iex> factorial(-6)
       -720
+
+      iex> factorial(1)
+      1
   """
   @spec factorial(integer) :: integer
-  def factorial(0), do: 1
-  def factorial(integer)
-  when is_negative(integer),
+  def factorial(integer) when integer in 0..1, do: 1
+  def factorial(integer) when is_negative(integer),
     do: -factorial(abs(integer))
-  def factorial(integer)
-  when is_integer(integer), do: do_fact(integer-1, integer)
+  def factorial(integer) when is_integer(integer),
+    do: do_fact(integer-1, integer)
 
   defp do_fact(1, factored), do: factored
   defp do_fact(next, factored), do: do_fact(next-1, factored * next)
