@@ -12,10 +12,17 @@ defmodule PassiveSupport.Atom do
       true
       iex> exists?("bar")
       false
+
+      iex> exists?("false")
+      true
+
+      iex> exists?("nil")
+      true
   """
   def exists?(atom) when is_atom(atom), do: true
   def exists?(string) when is_binary(string) do
-    String.to_existing_atom(string) && true
+    String.to_existing_atom(string)
+    true
   rescue
     ArgumentError -> false
   end
