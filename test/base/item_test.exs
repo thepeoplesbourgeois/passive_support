@@ -5,23 +5,28 @@ defmodule PassiveSupport.ItemTest do
 
   describe "dig" do
     defmodule SomeStruct do
-      defstruct some: nil, thing: nil
+      defstruct [:some]
     end
 
     defmodule SuperStruct do
       defstruct nested: %SomeStruct{
         some: [
           0, 1, %SomeStruct{
-            some: %{"oh hi" => "how are ya"}
+            some: %{"oh hi" => "how are ya", :i_am => [well: :fine]}
           }
-        ],
-        thing: :thing
+        ]
       }
     end
 
-    test "handles a dig through structs" do
+    test "handles a dig through lists, keyword lists, tuples, structs, and maps" do
       struct = %SuperStruct{}
       assert dig(struct, [:nested, :some, 2, :some, "oh hi"]) == "how are ya"
+      assert dig(struct, [:nested, :some, 2, :some, :i_am, :well]) == :fine
+    end
+
+    test "works with defaults" do
+      assert dig(%{}, :a) == nil
+      assert dig(%{}, :a, "default, dear Brutus, lies not in our stars...") == "default, dear Brutus, lies not in our stars..."
     end
   end
 end

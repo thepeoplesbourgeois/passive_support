@@ -2,142 +2,208 @@ defmodule PassiveSupport.Item do
   @moduledoc """
   Functions for handling arbitrary-shape values.
   """
-
   @type t :: any
+  @type key_or_index :: atom | integer | String.t
+
   @doc ~S"""
-    Returns `true` of any value that would return `true` with `Enum.empty?/1`,
-    as well as to bare tuples, binaries with no data, and strings containing
-    only whitespace, `nil`, and `false`. Returns `false` for any other value.
+  Performs `fun`, passing `item` as its argument, and returns `item`
 
-    Note that while a string containing only whitespace can be considered blank,
-    a charlist of the same nature will return `false`. Because charlists are
-    represented internally as lists of integers, a charlist of whitespace would
-    be indescernible from a list of numeric integers, neither of which would be
-    individually considered blank, and therefore should not be regarded as blank
-    in tandem.
+  NOTE: If you come from an object-oriented background, you may
+  think this function provides a means of altering the state or
+  condition of `item` before piping it to another function. It is not.
 
-    ## Examples
+  Instead, think of it like the `tee` program in shell systems,
+  only rather than saving the input on disk with a given filename,
+  this function will perform an arbitrary, nontransformative,
+  side effect (which could, of course, be saving it to disk, if
+  you so choose, but that's not the sole responsibility of `tap`).
 
-        iex> blank?({})
-        true
-        iex> blank?(%{})
-        true
-        iex> blank?(%MapSet{})
-        true
-        iex> blank?(0)
-        false
-        iex> blank?(nil)
-        true
-        iex> blank?(false)
-        true
-        iex> blank?("  ")
-        true
-        iex> blank?('  ') # [32, 32]
-        false
-        iex> blank?(" hi ")
-        false
-    """
+  ## Examples
+
+      > 1..10 |> Enum.to_list |> tap(&Logger.info(inspect(&1, label: "`1..10` as a list")))
+      # output from Logger
+      # => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+      > some_data |> tap(&IO.inspect(&1, label: "encoding as json")) |> Jason.encode!
+      # => JSON-encoded data
+
+  """
+  def tap(item, fun) do
+    fun.(item)
+    item
+  end
+
+  @doc ~S"""
+  Returns `true` of any value that would return `true` with `Enum.empty?/1`,
+  as well as to bare tuples, binaries with no data, and strings containing
+  only whitespace, `nil`, and `false`. Returns `false` for any other value.
+
+  Note that while a string containing only whitespace can be considered blank,
+  a charlist of the same nature will return `false`. Because charlists are
+  represented internally as lists of integers, a charlist of whitespace would
+  be indescernible from a list of numeric integers, neither of which would be
+  individually considered blank, and therefore should not be regarded as blank
+  in tandem.
+
+  ## Examples
+
+      iex> blank?({})
+      true
+      iex> blank?(%{})
+      true
+      iex> blank?(MapSet.new())
+      true
+      iex> blank?(0)
+      false
+      iex> blank?(nil)
+      true
+      iex> blank?(false)
+      true
+      iex> blank?("  ")
+      true
+      iex> blank?('  ') # [32, 32]
+      false
+      iex> blank?(" hi ")
+      false
+  """
   @spec blank?(t) :: boolean
   def blank?(item), do:
     PassiveSupport.Blank.blank?(item)
 
   @doc ~S"""
-    Returns `true` of any value that is not `blank?/1`
+  Returns `true` of any value that is not `blank?/1`
 
-    ## Examples
+  ## Examples
 
-        iex> present?({})
-        false
-        iex> present?(%{})
-        false
-        iex> present?(%MapSet{})
-        false
-        iex> present?(0)
-        true
-        iex> present?(nil)
-        false
-        iex> present?(false)
-        false
-        iex> present?("  ")
-        false
-        iex> present?(' ')
-        true
-        iex> present?(" hi ")
-        true
-    """
+      iex> present?({})
+      false
+      iex> present?(%{})
+      false
+      iex> present?(MapSet.new(1..10))
+      false
+      iex> present?(0)
+      true
+      iex> present?(nil)
+      false
+      iex> present?(false)
+      false
+      iex> present?("  ")
+      false
+      iex> present?(' ')
+      true
+      iex> present?(" hi ")
+      true
+  """
   @spec present?(t) :: boolean
   def present?(item), do:
     !blank?(item)
 
   @doc ~S"""
-    Returns `nil` for any `blank?/1` value, and returns the value back otherwise.
+  Returns `nil` for any `blank?/1` value, and returns the value back otherwise.
 
-    ## Examples
+  ## Examples
 
-        iex> presence({})
-        nil
-        iex> presence(%{})
-        nil
-        iex> presence(nil)
-        nil
-        iex> presence(false)
-        nil
-        iex> presence([false])
-        [false]
-        iex> presence("  ")
-        nil
-        iex> presence(" hi ")
-        " hi "
-    """
+      iex> presence({})
+      nil
+      iex> presence(%{})
+      nil
+      iex> presence(nil)
+      nil
+      iex> presence(false)
+      nil
+      iex> presence([false])
+      [false]
+      iex> presence("  ")
+      nil
+      iex> presence(" hi ")
+      " hi "
+  """
   @spec presence(t) :: t | none
   def presence(item), do:
     if present?(item), do: item, else: nil
 
   @doc """
-    Traverses into `item` through an arbitrary `path` of keys and indices
+  Traverses into `item` through an arbitrary `path` of keys and indices.
 
-    ## Examples
+  Think of `dig/3` as an extension of the concept at the heart of
+  `Access.get/3`. There are times when the data you're working with
+  is a deeply-nested structure, and your bigger concern is what a
+  specific part of that data looks like. In cases where you are working
+  with one sort of data type (e.g., maps, structs, tuples, or lists),
+  then you know you can use the same function or macro to dig down
+  through each successive layer of nested data. However, when working
+  with disparate data types, keeping track of the structure of each
+  level of the nested data becomes an exercise in both patience,
+  and trial and error.
 
-        iex> pets = %{
-        ...>   cats: [
-        ...>     %{name: "Lester", favorite_toy: "feather"},
-        ...>     %{name: "Janice", favorite_toy: "laser pointer"}
-        ...>   ],
-        ...>   dogs: [
-        ...>     %{name: "Scrump", favorite_toy: "rope"},
-        ...>     %{name: "Stitch", favorite_toy: "ball"}
-        ...>   ],
-        ...>   hyenas: [
-        ...>     %{"what is this" => "oh no", "hyenas can't be pets" => "too wild"}
-        ...>   ]
-        ...> }
-        iex> dig(pets, [:dogs])
-        [%{name: "Scrump", favorite_toy: "rope"}, %{name: "Stitch", favorite_toy: "ball"}]
-        iex> dig(pets, [:cats, 1])
-        %{name: "Janice", favorite_toy: "laser pointer"}
-        iex> dig(pets, [:hyenas, 0, "what is this"])
-        "oh no"
-        iex> dig(pets, [:dogs, 0, :favorite_food, :ingredients])
-        nil
-    """
-  @spec dig(t, [atom | integer | String.t]) :: t
-  def dig(item, path \\ []) do
-    dig_on(item, path)
+  The assurance `dig/3` provides is that, until arriving at a leaf node
+  within `item` or fully traversing through `path`, the function will
+  retrieve the element of `item` at the next point within `path`,
+  dispatching to the correct function for doing so based on the
+  structure of the data at the current level of traversal. If `dig`
+  arrives at a `nil` value at any point in traversal, the remainder
+  of the path is dropped, and the value provided as `default` (which,
+  by custom, defaults to `nil` itself) is immediately returned to the
+  caller.
+
+  **Note:** The only event in which this function will raise an exception
+  is when it attempts to traverse the `path` of a scalar value. To guarantee
+  consistency in the traversal rules, trying to traverse a tuple with
+  an out-of-bounds index results in `nil` being returned instead of an
+  `ArgumentError` being raised. Similarly, attempting to dig into a
+  struct at a keyword that it doesn't define will return `nil` instead of
+  raising a `KeyError`. For exception propagation, use `dig!/3` instead.
+
+  ## Examples
+
+      iex> pets = %{
+      ...>   cats: [
+      ...>     %{name: "Lester", favorite_toy: "feather"},
+      ...>     %{name: "Janice", favorite_toy: "laser pointer"}
+      ...>   ],
+      ...>   dogs: [
+      ...>     %{name: "Scrump", favorite_toy: "rope"},
+      ...>     %{name: "Stitch", favorite_toy: "ball"}
+      ...>   ],
+      ...>   hyenas: [
+      ...>     %{"what is this" => "oh no", "hyenas can't be pets" => "too wild"}
+      ...>   ]
+      ...> }
+      iex> dig(pets, [:dogs])
+      [%{name: "Scrump", favorite_toy: "rope"}, %{name: "Stitch", favorite_toy: "ball"}]
+      iex> dig(pets, [:cats, 1])
+      %{name: "Janice", favorite_toy: "laser pointer"}
+      iex> dig(pets, [:hyenas, 0, "what is this"])
+      "oh no"
+      iex> dig(pets, [:dogs, 0, :favorite_food, :ingredients])
+      nil
+  """
+  @spec dig(t, key_or_index | [key_or_index], t) :: t
+
+  def dig(item, path \\ [], default \\ nil)
+  def dig(item, path, default) when not is_list(path), do: dig(item, [path], default)
+  def dig(item, path, default) do
+    try do
+      dig_on(item, path, default)
+    rescue
+      ArgumentError -> default
+    end
   end
 
-  defp dig_on(nil, _), do: nil
-  defp dig_on(item, []), do: item
-  defp dig_on(item, path) when is_struct(item), do: dig_on(Map.from_struct(item), path)
-  defp dig_on(item, [next | path]) when is_atom(next) or is_binary(next), do: dig_on(item[next], path)
-  defp dig_on(item, [next | path]) when is_integer(next) and is_list(item),
+  defp dig_on(nil, _path, default), do: default
+  defp dig_on(item, [], _default), do: item
+  defp dig_on(item, path, default) when is_struct(item), do: dig_on(Map.from_struct(item), path, default)
+  defp dig_on(item, [next | path], default) when is_map(item), do: dig_on(item[next], path, default)
+  defp dig_on(item, [next | path], default) when is_list(item) and is_atom(next),
+    do: dig_on(item[next], path, default)
+  defp dig_on(item, [next | path], default) when is_list(item) and is_integer(next),
     do: item
-     |> List.pop_at(next)
-     |> elem(0)
-     |> dig_on(path)
-  defp dig_on(item, [next | path]) when is_integer(next) and is_tuple(item),
+     |> Enum.at(next)
+     |> dig_on(path, default)
+  defp dig_on(item, [next | path], default) when is_tuple(item) and is_integer(next),
     do: item
      |> elem(next)
-     |> dig_on(path)
+     |> dig_on(path, default)
 end
 
 
@@ -164,27 +230,29 @@ end
 
 defimpl PassiveSupport.Blank, for: Tuple do
   @spec blank?(tuple) :: boolean
-  def blank?(tuple), do:
-    tuple == {}
+  def blank?(tuple),
+    do: tuple == {}
 end
 
 defimpl PassiveSupport.Blank, for: List do
   @spec blank?(list) :: boolean
-  def blank?(list), do:
-    list == []
+  def blank?(list),
+    do: list == []
 end
 
 defimpl PassiveSupport.Blank, for: Any do
   @spec blank?(any) :: boolean
-  def blank?(%MapSet{}), do:
-    true
+  def blank?(%MapSet{}),
+    do: true
 
-  def blank?(item) when is_map(item), do:
-    item
-      |> Map.from_struct
-      |> Map.values
-      |> Enum.all?(&PassiveSupport.Item.blank?/1)
+  def blank?(item) when is_struct(item),
+    do: item
+     |> Map.from_struct
+     |> Map.values
+     |> Enum.all?(&PassiveSupport.Item.blank?/1)
 
-  def blank?(item), do:
-    if Enumerable.impl_for(item), do: Enum.empty?(item), else: !item
+  def blank?(item),
+    do: if Enumerable.impl_for(item),
+      do: Enum.empty?(item),
+      else: !item
 end
