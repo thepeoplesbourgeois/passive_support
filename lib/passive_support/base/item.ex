@@ -6,29 +6,39 @@ defmodule PassiveSupport.Item do
   @type key_or_index :: atom | integer | String.t
 
   @doc ~S"""
-  Performs `fun`, passing `item` as its argument, and returns `item`
+  Calls `fun.(item)`, passing along any transformations done therein.
 
-  NOTE: If you come from an object-oriented background, you may
-  think this function provides a means of altering the state or
-  condition of `item` before piping it to another function. It is not.
-
-  Instead, think of it like the `tee` program in shell systems,
-  only rather than saving the input on disk with a given filename,
-  this function will perform an arbitrary, nontransformative,
-  side effect (which could, of course, be saving it to disk, if
-  you so choose, but that's not the sole responsibility of `tap`).
+  Basically, I got tired of not being able to pipe a value into
+  arbitrary positions of other functions.
 
   ## Examples
 
-      > 1..10 |> Enum.to_list |> tap(&Logger.info(inspect(&1, label: "`1..10` as a list")))
+      iex> ", " |> tap(&Enum.join(1..10, &1))
+      "1, 2, 3, 4, 5, 6, 7, 8, 9, 10"
+
+      iex> false |> tap(&(unless &1, do: "oh!"))
+      "oh!"
+  """
+  def tap(item, fun), do: fun.(item)
+
+  @doc """
+  Calls `fun.(item)` and returns `item` unaltered.
+
+  This function mimics the `tee` program in shell systems,
+  allowing a copy of the passed-in item to be sent to another function
+  amid a pipeline of other functions that are transforming it
+  or handing it off for another value.
+
+  ## Examples
+
+      1..10 |> Enum.to_list |> tee(&Logger.info(inspect(&1, label: "`1..10` as a list")))
       # output from Logger
       # => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-      > some_data |> tap(&IO.inspect(&1, label: "encoding as json")) |> Jason.encode!
+      some_data |> tee(&IO.inspect(&1, label: "encoding as json")) |> Jason.encode!
       # => JSON-encoded data
-
   """
-  def tap(item, fun) do
+  def tee(item, fun) do
     fun.(item)
     item
   end
