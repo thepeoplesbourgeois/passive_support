@@ -59,4 +59,22 @@ defmodule PassiveSupport.Map do
      |> Stream.filter(fn {key, _} -> PassiveSupport.Atom.exists?(key) end)
      |> Stream.map(fn {key, value} -> {String.to_existing_atom(key), value} end)
      |> Enum.into(%{})
+
+  @doc ~S"""
+  Deletes the struct metadata from structs, but ordinary maps unchanged
+
+  ## Examples
+
+      PassiveSupport.Map.plain(%{foo: :bar})
+      # => %{foo: :bar}
+
+      defmodule Plane do
+        defstruct plains: :great
+      end
+
+      PassiveSupport.Map.plain(%Plane{})
+      # => %{plains: :great}
+  """
+  @spec plain(struct | map) :: map
+  def plain(%{} = map), do: Map.delete(map, :__struct__)
 end
