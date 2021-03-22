@@ -1,7 +1,7 @@
 defmodule PassiveSupport.Stream do
   import PassiveSupport.Enum, only: [to_map: 1]
 
-  @doc ~S"""
+  @doc """
   Generates a stream of all possible permutations of the given list.
   Note: due to the internal structure of maps in the Erlang VM, enumerables
   of lengths greater than 32 will not have permutations returned in the
@@ -23,24 +23,23 @@ defmodule PassiveSupport.Stream do
       ]
   """
 	@spec permutations(Enumerable.t) :: Stream.t
-	def permutations(enum)
-
-	def permutations(enum) do
-    enum
+	def permutations(enumerable)
+	def permutations(enumerable) do
+    enumerable
       |> to_map # allows fast access
       |> make_permutations
   end
 
-  defp make_permutations(enum) do
-    enum
+  defp make_permutations(enumerable) do
+    enumerable
       |> ebnorke_permutations
   end
 
   # The Erlang VM uses tries as the underlying structure to
-  # represent maps. As a result, maps longer than 31 entries
-  # are not processed in the same order as the entries were
-  # added to the map. Therefore, this implementation is "broken"
-  # in terms of the ordering of returned entries vs. passed-in
+    # represent maps. As a result, maps longer than 31 entries
+    # are not processed in the same order as the entries were
+    # added to the map. Therefore, this implementation is "broken"
+    # in terms of the ordering of returned entries vs. passed-in
   defp ebnorke_permutations(map) when map_size(map) == 0 do
     [[]]
   end

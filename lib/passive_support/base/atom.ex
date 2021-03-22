@@ -1,5 +1,5 @@
 defmodule PassiveSupport.Atom do
-
+  import PassiveSupport.String, only: [safe_existing_atom: 1]
   @doc """
   Returns true if the passed-in value resembles an existing atom
   and false if it does not.
@@ -25,5 +25,36 @@ defmodule PassiveSupport.Atom do
     true
   rescue
     ArgumentError -> false
+  end
+
+  @doc """
+  If able, casts the string to an atom, returning `nil` if not.
+
+  ## Examples
+
+      iex> from_string("ok")
+      :ok
+
+      iex> from_string("error")
+      :error
+
+      iex> from_string("true")
+      true
+
+      iex> from_string("false")
+      false
+
+      iex> from_string("nil")
+      nil
+
+      iex> from_string("what's all this then?")
+      nil
+  """
+  @spec from_string(String.t()) :: atom() | nil
+  def from_string(atomish) do
+    case safe_existing_atom(atomish) do
+      {:ok, atom} -> atom
+      _ -> nil
+    end
   end
 end
