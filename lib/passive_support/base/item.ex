@@ -3,6 +3,7 @@ defmodule PassiveSupport.Item do
   Functions for handling arbitrary-shape values.
   """
   @type t :: any
+  @type traversable :: tuple | list | map | struct
   @type key_or_index :: atom | integer | String.t
 
   @doc ~S"""
@@ -188,7 +189,7 @@ defmodule PassiveSupport.Item do
       iex> dig(pets, [:dogs, 0, :favorite_food, :ingredients])
       nil
   """
-  @spec dig(t, key_or_index | [key_or_index], t) :: t
+  @spec dig(traversable, key_or_index | [key_or_index], t) :: t
 
   def dig(item, path \\ [], default \\ nil)
   def dig(item, path, default) when not is_list(path), do: dig(item, [path], default)
