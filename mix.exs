@@ -33,7 +33,7 @@ defmodule PassiveSupport.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:benchee, "~> 0.13.2", only: :dev}
+      {:benchee, "~> 1.0.1", only: :dev}
     ]
   end
 end
