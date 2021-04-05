@@ -2,6 +2,51 @@ defmodule PassiveSupport.Stream do
   import PassiveSupport.Enum, only: [to_map: 1]
 
   @doc """
+  Attaches an accumulator, `acc`, to each element of the enumerable,
+  whose value changes per element, as defined by the return of `fun`.
+
+  Think of it like `Stream.with_index/2`, except abstracted in a manner
+  that provides the versatility of `Enum.reduce/3`
+
+      iex> with_memo(?a..?h, "", fn el, acc -> acc <> to_string([el]) end) |> Enum.to_list
+      [
+        {97, "a"},
+        {98, "ab"},
+        {99, "abc"},
+        {100, "abcd"},
+        {101, "abcde"},
+        {102, "abcdef"},
+        {103, "abcdefg"},
+        {104, "abcdefgh"},
+      ]
+
+  In fact, implementing `Stream.with_index/2` is possible with `PassiveSupport.Stream.with_memo/3`
+
+      iex> with_index = fn enum -> with_memo(enum, -1, fn _el, ix -> ix+1 end) end
+      iex> String.codepoints("hello world!") |> with_index.() |> Enum.to_list
+      [
+        {"h", 0},
+        {"e", 1},
+        {"l", 2},
+        {"l", 3},
+        {"o", 4},
+        {" ", 5},
+        {"w", 6},
+        {"o", 7},
+        {"r", 8},
+        {"l", 9},
+        {"d", 10},
+        {"!", 11}
+      ]
+  """
+  def with_memo(enum, accumulator, fun) do
+    Stream.transform(enum, accumulator, fn el, acc ->
+      acc = fun.(el, acc)
+      {[{el, acc}], acc}
+    end)
+  end
+
+  @doc """
   Generates a stream of all possible permutations of the given list.
   Note: due to the internal structure of maps in the Erlang VM, enumerables
   of lengths greater than 32 will not have permutations returned in the
