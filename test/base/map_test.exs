@@ -4,13 +4,14 @@ defmodule PassiveSupport.MapTest do
   import PassiveSupport.Map
 
   describe "plain/1" do
-    defmodule SomeStruct do
+    defmodule OldStruct do
       defstruct some: :thing
     end
 
     test "removes struct metadata from maps" do
-      assert plain(%SomeStruct{}) == %{some: :thing}
-      assert plain(%{some: :thing}) == %{some: :thing}
+      assert plain(%OldStruct{}) == %{some: :thing}
+      map = %{boo: :baa}
+      assert plain(map) == map
     end
   end
 end

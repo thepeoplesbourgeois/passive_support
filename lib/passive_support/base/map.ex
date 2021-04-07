@@ -20,7 +20,7 @@ defmodule PassiveSupport.Map do
   @doc ~S"""
   Returns `map` with its keys as atoms, if those atoms already exist.
 
-  Throws an exception otherwise
+  Raises `ArgumentError` otherwise.
 
   ## Examples
 
@@ -41,9 +41,9 @@ defmodule PassiveSupport.Map do
   @doc ~S"""
   Returns a `map` with any string keys that safely coerced to existing atoms
 
-  I'm not giving y'all the ridiculous footgun of
-  wanton atom space pollution. I'm not some foot-shooting
-  cowboy like `Jason`.
+  I'm not giving y'all the ridiculously dangerous footgun of
+  wanton atom space pollution. I'm not some crazy, foot-shooting
+  cowboy, like `Jason`.
 
   ## Examples
 
@@ -69,12 +69,13 @@ defmodule PassiveSupport.Map do
       # => %{foo: :bar}
 
       defmodule Plane do
-        defstruct plains: :great
+        defstruct plains: :great     # ... little plain punning for ya.
       end
 
       PassiveSupport.Map.plain(%Plane{})
       # => %{plains: :great}
   """
   @spec plain(struct | map) :: map
-  def plain(%{} = map), do: Map.delete(map, :__struct__)
+  def plain(struct) when is_struct(struct), do: Map.delete(struct, :__struct__)
+  def plain(%{} = map), do: map
 end
