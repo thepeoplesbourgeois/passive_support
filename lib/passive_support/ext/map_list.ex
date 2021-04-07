@@ -1,9 +1,16 @@
 defmodule MapList do
   @moduledoc """
+  **This moduledoc is provided to give insight into the
+  ideal working shape of the MapList. It is not yet implemented.
+  There's literally nothing to see here as of now, besides this,
+  what is very possibly the first ever recorded instance
+  of technical documentation fiction.**
+
   Functions for interacting with a list of data in an indexed
-  manner. Because `Maps` are not a lightweight structure, this
+  manner. Because `Map`s are not a lightweight structure, this
   module is recommended for edge cases in which normal traversal
-  of a `List` would be otherwise too time inefficient.
+  of a `List` would otherwise be too time inefficient for frequent
+  tasks.
 
   MapLists are implemented to behave as a `List` in almost all
   cases. The notable exception being that a `MapList` provides a
