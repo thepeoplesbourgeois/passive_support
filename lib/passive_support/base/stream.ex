@@ -49,11 +49,32 @@ defmodule PassiveSupport.Stream do
   @doc """
   Generates a stream of all possible permutations of the given list.
   Note: due to the internal structure of maps in the Erlang VM, enumerables
-  of lengths greater than 32 will not have permutations returned in the
-  expected ordering, but will be returned in a deterministic order, and
-  the full list of permutations will be available for iteration
+  with more than 32 total items will not be ordered permutations returned in
+  the order one might anticipate if they are familiar with the permutation-
+  generation algorithm, but the order _is_ deterministic, and all permutations
+  of the enumerable will be available within the stream
 
   ## Examples
+
+      iex> 1..4 |> permutations |> Enum.take(16)
+      [
+        [1, 2, 3, 4],
+        [1, 2, 4, 3],
+        [1, 3, 2, 4],
+        [1, 3, 4, 2],
+        [1, 4, 2, 3],
+        [1, 4, 3, 2],
+        [2, 1, 3, 4],
+        [2, 1, 4, 3],
+        [2, 3, 1, 4],
+        [2, 3, 4, 1],
+        [2, 4, 1, 3],
+        [2, 4, 3, 1],
+        [3, 1, 2, 4],
+        [3, 1, 4, 2],
+        [3, 2, 1, 4],
+        [3, 2, 4, 1]
+      ]
 
       iex> 1..32 |> permutations |> Enum.take(2)
       [
