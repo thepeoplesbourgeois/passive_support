@@ -4,7 +4,7 @@ defmodule PassiveSupport.Mixfile do
   def project do
     [app: :passive_support,
      version: "0.5.1",
-     elixir: "~> 1.6",
+     elixir: "~> 1.9",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps(),
