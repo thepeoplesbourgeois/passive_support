@@ -1,6 +1,8 @@
 defmodule PassiveSupport.Math do
   @moduledoc """
   Mathematical functions.
+
+  I'm not great at math.
   """
 
   @doc """
