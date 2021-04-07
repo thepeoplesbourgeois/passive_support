@@ -68,4 +68,6 @@ defmodule PassiveSupport.Path.Sigil do
   defmacro sigil_P(path, 'w') do
     quote do: Path.wildcard(unquote(path))
   end
+
+  # TODO: defmacro sigil_p
 end
