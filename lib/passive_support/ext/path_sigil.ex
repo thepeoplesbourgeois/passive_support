@@ -22,30 +22,30 @@ defmodule PassiveSupport.Path.Sigil do
 
   ## Examples
 
-      iex> ~P"foo"
+      iex> ~P[foo]
       Path.absname("foo")
 
-      iex> ~P"bar"a
+      iex> ~P[bar]a
       Path.absname("bar")
 
-      iex> ~P"bat"b
+      iex> ~P[bat]b
       "bat"
-      iex> ~P"bat/boy"b
+      iex> ~P[bat/boy]b
       "boy"
 
-      iex> ~P"fizz/buzz"d
+      iex> ~P[fizz/buzz]d
       "fizz"
-      iex> ~P"/etc/hosts"d
+      iex> ~P[/etc/hosts]d
       "/etc"
-      iex> ~P"/etc/config.d/nginx.conf"d
+      iex> ~P[/etc/config.d/nginx.conf]d
       "/etc/config.d"
 
-      iex> ~P"./deps/phoenix/lib"x
+      iex> ~P[./deps/phoenix/lib]x
       Path.expand("./deps/phoenix/lib")
-      iex> ~P"~/.bash_profile"x
+      iex> ~P[~/.bash_profile]x
       Path.expand("~/.bash_profile")
 
-      iex> ~P"**/*.txt"w
+      iex> ~P[**/*.txt]w
       Path.wildcard("**/*.txt")
   """
   defmacro sigil_P(path, modifiers)
