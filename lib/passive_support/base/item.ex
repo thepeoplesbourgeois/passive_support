@@ -7,7 +7,7 @@ defmodule PassiveSupport.Item do
   @type key_or_index :: atom | integer | String.t
 
   @doc ~S"""
-  Calls `fun.(item)`, passing along any transformations done therein.
+  Calls `fun.(item)`, returning `item` with any transformations done therein.
 
   Basically, I got tired of not being able to pipe a value into
   arbitrary positions of other functions.
@@ -19,6 +19,12 @@ defmodule PassiveSupport.Item do
 
       iex> false |> tap(&(unless &1, do: "oh!"))
       "oh!"
+
+      iex> [5, 4, 3, 2, 1] |> hd |> tap(&(&1 * &1))
+      25
+
+      iex> "hello world!" |> tap(&Regex.scan(~r/lo?/, &1))
+      [["l"], ["lo"], ["l"]]
   """
   def tap(item, fun), do: fun.(item)
 
