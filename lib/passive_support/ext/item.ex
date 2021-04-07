@@ -39,7 +39,7 @@ defmodule PassiveSupport.Item do
   ## Examples
 
       1..10 |> Enum.to_list |> tee(&Logger.info(inspect(&1, label: "`1..10` as a list")))
-      # output from Logger
+      # (… output from Logger …)
       # => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
       some_data |> tee(&IO.inspect(&1, label: "encoding as json")) |> Jason.encode!
