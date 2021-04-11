@@ -69,20 +69,34 @@ defmodule PassiveSupport.Integer do
 
       iex> exponential(2, -2)
       0.25
+
+      iex> exponential(8093487287322359832, 0)
+      1
   """
   # TODO: tail-call optimize
   @spec exponential(integer, integer) :: integer
-
-  def exponential(_, 0), do:
-    1
-  def exponential(base, factor) when is_negative(factor), do: 1 / (exponential(base, -factor))
-  def exponential(base, factor) when is_odd(factor) do
-    recursed_factor = exponential(base, factor - 1)
-    base * recursed_factor
+  def exponential(base, exponent) when is_negative(exponent),
+    do: 1 / exponential(base, -exponent)
+  def exponential(base, exponent) do
+    exponent
+     |> factors
+     |> Enum.reduce(base, fn
+          0, _acc -> 1
+          1, acc -> acc
+          fact, acc when is_odd(fact) -> base * acc
+          fact, acc when is_even(fact) -> acc * acc
+        end)
   end
-  def exponential(base, factor) do
-    recursed_factor = exponential(base, div(factor, 2))
-    recursed_factor * recursed_factor
+
+  defp factors(0), do: [0]
+  defp factors(exponent) do
+    exponent
+     |> Stream.unfold(fn
+          0 -> nil
+          exp when is_even(exp) -> {exp, div(exp, 2)}
+          exp when is_odd(exp) -> {exp, exp - 1}
+        end)
+     |> Enum.reverse()
   end
 
   @doc """
