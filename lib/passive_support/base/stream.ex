@@ -2,13 +2,16 @@ defmodule PassiveSupport.Stream do
   import PassiveSupport.Enum, only: [to_map: 1]
 
   @doc """
-  Attaches an accumulator, `acc`, to each element of the enumerable,
-  whose value changes per element, as defined by the return of `fun`.
+  Processes an item while iterating through the provided stream
+
+  `PassiveSupport.Stream.with_memo/3` attaches an arbitrary accumulator
+  `acc` to the provided `enum`, and transforms it in relation to each
+  successive item in the enumerable according to the return of `fun.(item, acc)`
 
   Think of it like `Stream.with_index/2`, except abstracted in a manner
   that provides the versatility of `Enum.reduce/3`
 
-      iex> with_memo(?a..?h, "", fn el, acc -> acc <> to_string([el]) end) |> Enum.to_list
+      iex> with_memo(?a..?h, "", fn item, acc -> acc <> to_string([item]) end) |> Enum.to_list
       [
         {97, "a"},
         {98, "ab"},
@@ -40,9 +43,9 @@ defmodule PassiveSupport.Stream do
       ]
   """
   def with_memo(enum, accumulator, fun) do
-    Stream.transform(enum, accumulator, fn el, acc ->
-      acc = fun.(el, acc)
-      {[{el, acc}], acc}
+    Stream.transform(enum, accumulator, fn item, acc ->
+      acc = fun.(item, acc)
+      {[{item, acc}], acc}
     end)
   end
 
