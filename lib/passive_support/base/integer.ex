@@ -1,5 +1,5 @@
 defmodule PassiveSupport.Integer do
-  import Integer, only: [is_odd: 1]
+  import Integer, only: [is_odd: 1, is_even: 1]
 
   @doc """
   Qualifies if `integer` is an integer less than 0.
@@ -111,8 +111,8 @@ defmodule PassiveSupport.Integer do
       "574,6829,1379"
   """
   def formatted(integer, opts \\ []) do
-    separator = Keyword.get(opts, :separator, ",")
-    spacing = Keyword.get(opts, :spacing, 3)
+    separator = opts[:separator] || ","
+    spacing = opts[:spacing] || 3
     integer
       |> Integer.digits
       |> Stream.map(&to_string/1)
