@@ -42,14 +42,11 @@ defmodule PassiveSupport.Integer do
       1
   """
   @spec factorial(integer) :: integer
-  def factorial(integer) when integer in 0..1, do: 1
+  def factorial(0), do: 1
   def factorial(integer) when is_negative(integer),
-    do: -factorial(abs(integer))
+    do: -factorial(-integer)
   def factorial(integer) when is_integer(integer),
-    do: do_fact(integer-1, integer)
-
-  defp do_fact(1, factored), do: factored
-  defp do_fact(next, factored), do: do_fact(next-1, factored * next)
+    do: 1..integer |> Enum.reduce(fn int, product -> product * int end)
 
   @doc ~S"""
   Arbitrary-precision exponentiation
