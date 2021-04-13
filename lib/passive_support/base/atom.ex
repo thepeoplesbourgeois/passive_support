@@ -28,7 +28,7 @@ defmodule PassiveSupport.Atom do
   end
 
   @doc """
-  If able, casts the string to an atom, returning `nil` if not.
+  If able, casts the string to an existing atom, returning `nil` if not.
 
   ## Examples
 
@@ -44,7 +44,7 @@ defmodule PassiveSupport.Atom do
       iex> from_string("false")
       false
 
-      iex> from_string("nil")
+      iex> from_string("nil") # `nil` is, itself, an atom
       nil
 
       iex> from_string("what's all this then?")
