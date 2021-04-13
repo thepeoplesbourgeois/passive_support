@@ -110,6 +110,7 @@ defmodule PassiveSupport.Integer do
       iex> formatted(57468291379, spacing: 4)
       "574,6829,1379"
   """
+  @spec formatted(integer, separator: String.t, spacing: integer) :: String.t
   def formatted(integer, opts \\ []) do
     separator = opts[:separator] || ","
     spacing = opts[:spacing] || 3
