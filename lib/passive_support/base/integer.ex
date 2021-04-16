@@ -48,44 +48,45 @@ defmodule PassiveSupport.Integer do
   def factorial(integer) when is_integer(integer),
     do: 1..integer |> Enum.reduce(fn int, product -> product * int end)
 
+  # Derived from https://stackoverflow.com/questions/32024156/how-do-i-raise-a-number-to-a-power-in-elixir#answer-32030190
   @doc ~S"""
   Arbitrary-precision exponentiation
 
-  Original implementation from https://stackoverflow.com/questions/32024156/how-do-i-raise-a-number-to-a-power-in-elixir#answer-32030190
-
   ## Examples
-
-      iex> exponential(2, 5)
-      32
 
       iex> exponential(2, 10)
       1024
 
+      iex> exponential(3, 3)
+      27
+
       iex> exponential(2, 100)
       1267650600228229401496703205376
 
-      iex> exponential(2, -2)
-      0.25
+      iex> exponential(5, -3)
+      0.008
 
       iex> exponential(8093487287322359832, 0)
       1
+
+      iex> exponential(0, 2981375640)
+      0
   """
-  # TODO: tail-call optimize
-  @spec exponential(integer, integer) :: integer
+  @spec exponential(integer, integer) :: number
+  def exponential(0, _exponent), do: 0
+  def exponential(_base, 0), do: 1
   def exponential(base, exponent) when is_negative(exponent),
     do: 1 / exponential(base, -exponent)
   def exponential(base, exponent) do
     exponent
      |> factors
      |> Enum.reduce(base, fn
-          0, _acc -> 1
-          1, acc -> acc
-          fact, acc when is_odd(fact) -> base * acc
-          fact, acc when is_even(fact) -> acc * acc
+          1, product -> product
+          factor, product when is_odd(factor) -> base * product
+          factor, product when is_even(factor) -> product * product
         end)
   end
 
-  defp factors(0), do: [0]
   defp factors(exponent) do
     exponent
      |> Stream.unfold(fn
