@@ -66,15 +66,18 @@ defmodule PassiveSupport.Integer do
       iex> exponential(5, -3)
       0.008
 
-      iex> exponential(8093487287322359832, 0)
+      iex> exponential(9832, 0)
       1
 
-      iex> exponential(0, 2981375640)
+      iex> exponential(0, 2)
       0
+      
+      iex> exponential(0, 0)
+      1
   """
   @spec exponential(integer, integer) :: number
-  def exponential(0, _exponent), do: 0
   def exponential(_base, 0), do: 1
+  def exponential(0, _exponent), do: 0
   def exponential(base, exponent) when is_negative(exponent),
     do: 1 / exponential(base, -exponent)
   def exponential(base, exponent) do
