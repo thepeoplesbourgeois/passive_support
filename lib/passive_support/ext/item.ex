@@ -194,6 +194,17 @@ defmodule PassiveSupport.Item do
       "oh no"
       iex> dig(pets, [:dogs, 0, :favorite_food, :ingredients])
       nil
+
+  You can also use `dig` through lists of nested data structures
+  by passing an empty list `[]` as a part of `path`.
+
+      iex> connor_family = [
+      ...>  {"Sarah", %{favorite_movies: ["Dr. Strangelove", "China Town", "Citizen Kane"]}},
+      ...>  {"John", %{favorite_movies: ["Tron", "Star Wars", "The Fifth Element"]}},
+      ...>  {"Cameron", %{favorite_movies: ["Robocop", "Logan's Run", "The Animatrix - The Second Renaissance Part 2"]}}
+      ...> ]
+      iex> dig(connor_family, [[], 1, :favorite_movies, 2])
+      ["Citizen Kane", "The Fifth Element", "The Animatrix - The Second Renaissance Part 2"]
   """
   @spec dig(traversable, key_or_index | [key_or_index], t) :: t
 
@@ -209,6 +220,7 @@ defmodule PassiveSupport.Item do
 
   defp dig_on(nil, _path, default), do: default
   defp dig_on(item, [], _default), do: item
+  defp dig_on(item, [[] | path], default), do: Enum.map(item, &dig_on(&1, path, default))
   defp dig_on(item, path, default) when is_struct(item), do: dig_on(Map.from_struct(item), path, default)
   defp dig_on(item, [next | path], default) when is_map(item), do: dig_on(item[next], path, default)
   defp dig_on(item, [next | path], default) when is_list(item) and is_atom(next),
