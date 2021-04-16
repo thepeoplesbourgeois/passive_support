@@ -121,7 +121,6 @@ defmodule PassiveSupport.String do
     [Enum.reverse(substrings) | do_length_split(rest, lengths, lengths)]
   end
 
-  @type default_atom :: atom() | nil
   @doc ~S"""
   Safely casts the string to an atom, returning {:ok, atom} if successful,
   and {:error, default} if not. Default defaults to `nil` by defualt,
@@ -135,20 +134,13 @@ defmodule PassiveSupport.String do
       {:ok, :ok}
 
       iex> safe_existing_atom("not_particularly_ok")
-      {:error, nil}
-
-      iex> safe_existing_atom("not_particularly_ok", :but_this_is)
-      {:error, :but_this_is}
-
-      iex> safe_existing_atom("ok", "not_an_atom")
-      ** (FunctionClauseError) no function clause matching in PassiveSupport.String.safe_existing_atom/2
+      :error
   """
-  @spec safe_existing_atom(String.t, default_atom) :: {:ok, atom} | {:error, default_atom}
-  def safe_existing_atom(string, default \\ nil)
-  def safe_existing_atom(string, default) when is_atom(default) do
+  @spec safe_existing_atom(String.t) :: {:ok, atom} | :error
+  def safe_existing_atom(string) do
     {:ok, String.to_existing_atom(string)}
   rescue
-    ArgumentError -> {:error, default}
+    ArgumentError -> :error
   end
 
   @doc """
