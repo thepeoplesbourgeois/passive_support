@@ -19,12 +19,13 @@ defmodule PassiveSupport.Atom do
       iex> exists?("nil")
       true
   """
+  @spec exists?(atom) :: boolean
   def exists?(atom) when is_atom(atom), do: true
   def exists?(string) when is_binary(string) do
-    String.to_existing_atom(string)
-    true
-  rescue
-    ArgumentError -> false
+    case safe_existing_atom(string) do
+      {:ok, _} -> true
+      :error -> false
+    end
   end
 
   @doc """
