@@ -6,56 +6,64 @@ defmodule PassiveSupport.Stream do
 
   `PassiveSupport.Stream.with_memo/3` attaches an arbitrary accumulator
   `acc` to the provided `enum`, and transforms it in relation to each
-  successive item in the enumerable according to the return of `fun.(item, acc)`
+  successive item in the enumerable according to the return of `fun.(item, acc)`.
 
-  Think of it like `Stream.with_index/2`, except abstracted in a manner
-  that provides the versatility of `Enum.reduce/3`
-
-      iex> with_memo(?a..?h, "", fn item, acc -> acc <> to_string([item]) end) |> Enum.to_list
-      [
-        {97, "a"},
-        {98, "ab"},
-        {99, "abc"},
-        {100, "abcd"},
-        {101, "abcde"},
-        {102, "abcdef"},
-        {103, "abcdefg"},
-        {104, "abcdefgh"},
-      ]
+  Think of it like `Stream.with_index/2`, but with the abstracted versatility
+  of `Enum.reduce/3`.
 
   In fact, implementing `Stream.with_index/2` is possible with `PassiveSupport.Stream.with_memo/3`
 
-      iex> with_index = fn enum -> with_memo(enum, -1, fn _el, ix -> ix+1 end) end
-      iex> String.codepoints("hello world!") |> with_index.() |> Enum.to_list
+      iex> with_index = fn enum ->
+      ...>   with_memo(enum, -1, fn _el, ix -> ix+1 end)
+      ...> end
+      iex> String.graphemes("hi world!") |> with_index.() |> Enum.to_list
+      [{"h", 0}, {"i", 1}, {" ", 2},
+       {"w", 3}, {"o", 4}, {"r", 5}, {"l", 6}, {"d", 7}, {"!", 8}
+      ]
+
+  By passing `false` as a fourth argument, `evaluate_first`, you can return
+  `accumulator` in the state it was in prior to `fun` being called.
+
+      iex> with_memo(?a..?c, "", fn char, string -> string <> to_string([char]) end) |> Enum.to_list
       [
-        {"h", 0},
-        {"e", 1},
-        {"l", 2},
-        {"l", 3},
-        {"o", 4},
-        {" ", 5},
-        {"w", 6},
-        {"o", 7},
-        {"r", 8},
-        {"l", 9},
-        {"d", 10},
-        {"!", 11}
+        {97, "a"},
+        {98, "ab"},
+        {99, "abc"}
+      ]
+
+      iex> with_memo(?a..?c, "", fn char, string -> string <> to_string([char]) end, false) |> Enum.to_list
+      [
+        {97, ""},
+        {98, "a"},
+        {99, "ab"}
       ]
   """
-  def with_memo(enum, accumulator, fun) do
+  @spec with_memo(Enumerable.t, any, function, boolean) :: Stream.t
+  def with_memo(enum, accumulator, fun, evaluate_first \\ true) do
     Stream.transform(enum, accumulator, fn item, acc ->
-      acc = fun.(item, acc)
-      {[{item, acc}], acc}
+      new = fun.(item, acc)
+      {[{item, if(evaluate_first, do: new, else: acc)}],
+        new
+      }
     end)
   end
 
   @doc """
   Generates a stream of all possible permutations of the given list.
-  Note: due to the internal structure of maps in the Erlang VM, enumerables
-  with more than 32 total items will not be ordered permutations returned in
-  the order one might anticipate if they are familiar with the permutation-
-  generation algorithm, but the order _is_ deterministic, and all permutations
-  of the enumerable will be available within the stream
+
+  Note: The permutations of enumerables containing 32 items or more
+  will not come back in exactly the order you might expect if you are
+  familiar with the general permutation algorithm. This is because
+  PassiveSupport first renders the enumerable into a map, with keys
+  representing each item's index from the list form of the enumerable.
+  The Erlang VM uses a keyword list to represent maps of 31 and fewer
+  items,and a data structure called a trie to represent maps larger
+  than that. Because of how Erlang enumerates the key-value pairs of this
+  trie, the order in which those pairs are presented is not in incrementing order.
+
+  That said, the order _is_ still deterministic, all permutations
+  of the enumerable will be available by the time the stream is done
+  being processed, and this function by generating permutations out of the map
 
   ## Examples
 
@@ -99,24 +107,14 @@ defmodule PassiveSupport.Stream do
       |> make_permutations
   end
 
-  defp make_permutations(enumerable) do
-    enumerable
-      |> ebnorke_permutations
-  end
-
-  # The Erlang VM uses tries as the underlying structure to
-    # represent maps. As a result, maps longer than 31 entries
-    # are not processed in the same order as the entries were
-    # added to the map. Therefore, this implementation is "broken"
-    # in terms of the ordering of returned entries vs. passed-in
-  defp ebnorke_permutations(map) when map_size(map) == 0 do
+  defp make_permutations(map) when map_size(map) == 0 do
     [[]]
   end
-  defp ebnorke_permutations(map) when is_map(map),
+  defp make_permutations(map) when is_map(map),
     do: map
      |> Stream.flat_map(fn {index, next} ->
           submap = map
            |> Map.delete(index)
-          Stream.map(ebnorke_permutations(submap), fn (sub) -> [next | sub] end)
+          Stream.map(make_permutations(submap), fn (sub) -> [next | sub] end)
         end)
 end
