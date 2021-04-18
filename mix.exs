@@ -19,8 +19,12 @@ defmodule PassiveSupport.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     # Specify extra applications you'll use from Erlang/Elixir
-    [extra_applications: [:logger]]
+    [extra_applications: extra_apps(Mix.env)]
   end
+
+  def extra_apps(:test), do: extra_apps(:dev)
+  def extra_apps(:dev), do: [:iex | [:os_mon | extra_apps(:prod)]]
+  def extra_apps(_), do: [:logger, :runtime_tools]
 
   # Dependencies can be Hex packages:
   #
