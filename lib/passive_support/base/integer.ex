@@ -1,6 +1,4 @@
 defmodule PassiveSupport.Integer do
-  import Integer, only: [is_odd: 1, is_even: 1]
-
   @doc """
   Qualifies if `integer` is an integer less than 0.
   """
@@ -71,34 +69,54 @@ defmodule PassiveSupport.Integer do
 
       iex> exponential(0, 2)
       0
-      
+
       iex> exponential(0, 0)
       1
   """
   @spec exponential(integer, integer) :: number
   def exponential(_base, 0), do: 1
   def exponential(0, _exponent), do: 0
-  def exponential(base, exponent) when is_negative(exponent),
-    do: 1 / exponential(base, -exponent)
+  def exponential(base, 1), do: base
+  def exponential(base, exponent) when is_negative(exponent), do: 1 / exponential(base, -exponent)
   def exponential(base, exponent) do
-    exponent
-     |> factors
-     |> Enum.reduce(base, fn
-          1, product -> product
-          factor, product when is_odd(factor) -> base * product
-          factor, product when is_even(factor) -> product * product
-        end)
+    derivation(base, exponent)
   end
 
-  defp factors(exponent) do
-    exponent
+  import Bitwise
+
+  defp derivation(base, exponent) do
+    {base, 1, exponent}
      |> Stream.unfold(fn
-          0 -> nil
-          exp when is_even(exp) -> {exp, div(exp, 2)}
-          exp when is_odd(exp) -> {exp, exp - 1}
+          nil -> nil
+          {product, primer, 1} -> {product*primer, nil}
+          {product, primer, exp} when (exp &&& 1) == 1 ->
+            {nil, {product*product, primer*product, (exp >>> 1)}}
+          {product, primer, exp} ->
+            {nil, {product * product, primer, (exp >>> 1)}}
         end)
-     |> Enum.reverse()
+     |> Enum.find(&(&1))
+    #  |> PassiveSupport.Stream.with_memo({base, 1}, fn
+    #       1, {product, primer} -> product * primer
+    #       :odd, {product, primer} -> {product * product, product * primer}
+    #       :even, {product, primer} -> {product * product, primer}
+    #     end)
+    #  |> Enum.reduce(fn
+    #       {1, product}, _nope -> product
+    #       _doesnt_matter, _still_nope -> nil
+    #     end)
   end
+
+  def pow(base, exponent) when is_negative(exponent), do: 1 / pow(base, -exponent)
+  def pow(base, exponent) when is_integer(base) and is_integer(exponent) do
+    if is_negative(exponent), do: :erlang.error(:badarith, [base, exponent])
+    guarded_pow(base, exponent)
+  end
+
+  # https://en.wikipedia.org/wiki/Exponentiation_by_squaring
+  defp guarded_pow(_, 0), do: 1
+  defp guarded_pow(b, 1), do: b
+  defp guarded_pow(b, e) when (e &&& 1) == 0, do: guarded_pow(b * b, e >>> 1)
+  defp guarded_pow(b, e), do: guarded_pow(b * b, e >>> 1) * b
 
   @doc """
   Converts an integer to a string, with a `separator` (default `","`)
