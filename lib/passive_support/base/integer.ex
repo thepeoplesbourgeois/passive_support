@@ -82,29 +82,14 @@ defmodule PassiveSupport.Integer do
     derivation(base, exponent)
   end
 
-  import Bitwise
+  defp derivation(product, primer \\ 1, power)
+  defp derivation(product, primer, 1), do: product * primer
+  defp derivation(product, primer, power) when rem(power, 2) == 1,
+    do: derivation(product * product, primer * product, (power - 1) |> div(2))
+  defp derivation(product, primer, power),
+    do: derivation(product * product, primer, power |> div(2))
 
-  defp derivation(base, exponent) do
-    {base, 1, exponent}
-     |> Stream.unfold(fn
-          nil -> nil
-          {product, primer, 1} -> {product*primer, nil}
-          {product, primer, exp} when (exp &&& 1) == 1 ->
-            {nil, {product*product, primer*product, (exp >>> 1)}}
-          {product, primer, exp} ->
-            {nil, {product * product, primer, (exp >>> 1)}}
-        end)
-     |> Enum.find(&(&1))
-    #  |> PassiveSupport.Stream.with_memo({base, 1}, fn
-    #       1, {product, primer} -> product * primer
-    #       :odd, {product, primer} -> {product * product, product * primer}
-    #       :even, {product, primer} -> {product * product, primer}
-    #     end)
-    #  |> Enum.reduce(fn
-    #       {1, product}, _nope -> product
-    #       _doesnt_matter, _still_nope -> nil
-    #     end)
-  end
+  import Bitwise
 
   def pow(base, exponent) when is_negative(exponent), do: 1 / pow(base, -exponent)
   def pow(base, exponent) when is_integer(base) and is_integer(exponent) do
