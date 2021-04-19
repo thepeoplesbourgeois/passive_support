@@ -1,10 +1,10 @@
 defmodule Benchmark do
   @time 15
-  # @memory @time / 2
   @warmup 3
   alias PassiveSupport.Integer, as: Int
+
   def maths, do: Benchee.run(%{
-    "iterative" => fn {base, exp} -> Int.exponential(base, exp) end,
+    "tail-call recursive" => fn {base, exp} -> Int.exponential(base, exp) end,
     # "recursive" => fn {base, exp} -> Int.pow(base, exp) end
   },
   inputs:
