@@ -1,4 +1,5 @@
 defmodule PassiveSupport.Integer do
+  import Integer, only: [is_odd: 1, is_even: 1]
   @doc """
   Qualifies if `integer` is an integer less than 0.
   """
@@ -53,73 +54,42 @@ defmodule PassiveSupport.Integer do
 
   ## Examples
 
-      iex> tail_exponential(2, 10)
+      iex> exponential(2, 10)
       1024
 
-      iex> tail_exponential(3, 3)
+      iex> exponential(3, 3)
       27
 
-      iex> tail_exponential(2, 100)
+      iex> exponential(2, 100)
       1267650600228229401496703205376
 
-      iex> tail_exponential(5, -3)
+      iex> exponential(5, -3)
       0.008
 
-      iex> tail_exponential(9832, 0)
+      iex> exponential(9832, 0)
       1
 
-      iex> tail_exponential(0, 2)
+      iex> exponential(0, 2)
       0
 
-      iex> tail_exponential(0, 0)
+      iex> exponential(0, 0)
       1
   """
-  @spec tail_exponential(integer, integer) :: number
-  def tail_exponential(_base, 0), do: 1
-  def tail_exponential(0, _exponent), do: 0
-  def tail_exponential(base, 1), do: base
-  def tail_exponential(base, exponent) when is_negative(exponent), do: 1 / tail_exponential(base, -exponent)
-  def tail_exponential(base, exponent) do
-    tail_derivation(base, exponent)
+  @spec exponential(integer, integer) :: number
+  def exponential(_base, 0), do: 1
+  def exponential(0, _exponent), do: 0
+  def exponential(base, 1), do: base
+  def exponential(base, exponent) when is_negative(exponent), do: 1 / exponential(base, -exponent)
+  def exponential(base, exponent) do
+    derivation(base, exponent)
   end
 
-  defp tail_derivation(product, primer \\ 1, power)
-  defp tail_derivation(product, primer, 1), do: product * primer
-  defp tail_derivation(product, primer, power) when (power &&& 1) == 1,
-    do: tail_derivation(product * product, primer * product, (power >>> 1))
-  defp tail_derivation(product, primer, power),
-    do: tail_derivation(product * product, primer, (power >>> 1))
-
-  def iter_exponential(base, 1), do: base
-  def iter_exponential(base, exponent) when is_negative(exponent), do: 1 / iter_exponential(base, -exponent)
-  def iter_exponential(base, exponent) do
-    iter_derivation(base, exponent)
-  end
-
-  defp iter_derivation(base, exponent) do
-    {base, 1, exponent}
-     |> Stream.unfold(fn
-          nil -> nil
-          {product, primer, 1} -> {product*primer, nil}
-          {product, primer, exp} when (exp &&& 1) == 1 ->
-            {nil, {product*product, primer*product, (exp >>> 1)}}
-          {product, primer, exp} ->
-            {nil, {product * product, primer, (exp >>> 1)}}
-        end)
-     |> Enum.find(&(&1))
-  end
-
-  def pow(base, exponent) when is_negative(exponent), do: 1 / pow(base, -exponent)
-  def pow(base, exponent) when is_integer(base) and is_integer(exponent) do
-    if is_negative(exponent), do: :erlang.error(:badarith, [base, exponent])
-    guarded_pow(base, exponent)
-  end
-
-  # https://en.wikipedia.org/wiki/Exponentiation_by_squaring
-  defp guarded_pow(_, 0), do: 1
-  defp guarded_pow(b, 1), do: b
-  defp guarded_pow(b, e) when (e &&& 1) == 0, do: guarded_pow(b * b, e >>> 1)
-  defp guarded_pow(b, e), do: guarded_pow(b * b, e >>> 1) * b
+  defp derivation(product, primer \\ 1, power)
+  defp derivation(product, primer, 1), do: product * primer
+  defp derivation(product, primer, power) when is_odd(power),
+    do: derivation(product * product, primer * product, (power >>> 1))
+  defp derivation(product, primer, power) when is_even(power),
+    do: derivation(product * product, primer, (power >>> 1))
 
   @doc """
   Converts an integer to a string, with a `separator` (default `","`)
