@@ -38,7 +38,7 @@ defmodule PassiveSupport.Mixfile do
   defp deps do
     [
       {:benchee, "~> 1.0.1", only: :dev},
-      {:ex_doc, ">= 0.0.0"}
+      {:ex_doc, "~> 0.24.1", only: :dev}
     ]
   end
 end
