@@ -23,8 +23,8 @@ defmodule PassiveSupport.Mixfile do
   end
 
   def extra_apps(:test), do: extra_apps(:dev)
-  def extra_apps(:dev), do: [:iex | [:os_mon | extra_apps(:prod)]]
-  def extra_apps(_), do: [:logger, :runtime_tools]
+  def extra_apps(:dev), do: [:iex | extra_apps(:staging)]
+  def extra_apps(_), do: [:logger]
 
   # Dependencies can be Hex packages:
   #
