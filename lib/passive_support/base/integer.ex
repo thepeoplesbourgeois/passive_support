@@ -46,50 +46,68 @@ defmodule PassiveSupport.Integer do
   def factorial(integer) when is_integer(integer),
     do: 1..integer |> Enum.reduce(fn int, product -> product * int end)
 
+  import Bitwise
   # Derived from https://stackoverflow.com/questions/32024156/how-do-i-raise-a-number-to-a-power-in-elixir#answer-32030190
   @doc ~S"""
   Arbitrary-precision exponentiation
 
   ## Examples
 
-      iex> exponential(2, 10)
+      iex> tail_exponential(2, 10)
       1024
 
-      iex> exponential(3, 3)
+      iex> tail_exponential(3, 3)
       27
 
-      iex> exponential(2, 100)
+      iex> tail_exponential(2, 100)
       1267650600228229401496703205376
 
-      iex> exponential(5, -3)
+      iex> tail_exponential(5, -3)
       0.008
 
-      iex> exponential(9832, 0)
+      iex> tail_exponential(9832, 0)
       1
 
-      iex> exponential(0, 2)
+      iex> tail_exponential(0, 2)
       0
 
-      iex> exponential(0, 0)
+      iex> tail_exponential(0, 0)
       1
   """
-  @spec exponential(integer, integer) :: number
-  def exponential(_base, 0), do: 1
-  def exponential(0, _exponent), do: 0
-  def exponential(base, 1), do: base
-  def exponential(base, exponent) when is_negative(exponent), do: 1 / exponential(base, -exponent)
-  def exponential(base, exponent) do
-    derivation(base, exponent)
+  @spec tail_exponential(integer, integer) :: number
+  def tail_exponential(_base, 0), do: 1
+  def tail_exponential(0, _exponent), do: 0
+  def tail_exponential(base, 1), do: base
+  def tail_exponential(base, exponent) when is_negative(exponent), do: 1 / tail_exponential(base, -exponent)
+  def tail_exponential(base, exponent) do
+    tail_derivation(base, exponent)
   end
 
-  defp derivation(product, primer \\ 1, power)
-  defp derivation(product, primer, 1), do: product * primer
-  defp derivation(product, primer, power) when rem(power, 2) == 1,
-    do: derivation(product * product, primer * product, (power - 1) |> div(2))
-  defp derivation(product, primer, power),
-    do: derivation(product * product, primer, power |> div(2))
+  defp tail_derivation(product, primer \\ 1, power)
+  defp tail_derivation(product, primer, 1), do: product * primer
+  defp tail_derivation(product, primer, power) when (power &&& 1) == 1,
+    do: tail_derivation(product * product, primer * product, (power >>> 1))
+  defp tail_derivation(product, primer, power),
+    do: tail_derivation(product * product, primer, (power >>> 1))
 
-  import Bitwise
+  def iter_exponential(base, 1), do: base
+  def iter_exponential(base, exponent) when is_negative(exponent), do: 1 / iter_exponential(base, -exponent)
+  def iter_exponential(base, exponent) do
+    iter_derivation(base, exponent)
+  end
+
+  defp iter_derivation(base, exponent) do
+    {base, 1, exponent}
+     |> Stream.unfold(fn
+          nil -> nil
+          {product, primer, 1} -> {product*primer, nil}
+          {product, primer, exp} when (exp &&& 1) == 1 ->
+            {nil, {product*product, primer*product, (exp >>> 1)}}
+          {product, primer, exp} ->
+            {nil, {product * product, primer, (exp >>> 1)}}
+        end)
+     |> Enum.find(&(&1))
+  end
 
   def pow(base, exponent) when is_negative(exponent), do: 1 / pow(base, -exponent)
   def pow(base, exponent) when is_integer(base) and is_integer(exponent) do
