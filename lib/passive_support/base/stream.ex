@@ -38,7 +38,7 @@ defmodule PassiveSupport.Stream do
         {99, "ab"}
       ]
   """
-  @spec with_memo(Enumerable.t, any, function, boolean) :: Stream.t
+  @spec with_memo(Enumerable.t, any, (Stream.element(), Stream.acc() -> Stream.acc()), boolean) :: Enumerable.t
   def with_memo(enum, accumulator, fun, evaluate_first \\ true) do
     Stream.transform(enum, accumulator, fn item, acc ->
       new = fun.(item, acc)
