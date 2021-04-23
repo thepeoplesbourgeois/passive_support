@@ -1,6 +1,25 @@
 defmodule PassiveSupport.Range do
   @moduledoc """
-  Helper functions for using ranges
+  Helper functions for working with ranges.
+
+  Ranges have some interesting characteristics in Elixir. A range literal
+  is the language's simplest representation of a Stream; the use case for
+  them is rather limited compared to other languages; and as of version 1.12.0,
+  it is the first data type in Elixir to make use of a ternary operator (`..///3`)
+
+  All of this can mean exactly one thing: Ranges are for lovers. And by
+  virtue of that fact, this library maintainer's personal soft spot for
+  the data type has to be categorical proof that he is, in fact, a lover.
+
+  This module defines a number of functions that help in determining the
+  characteristics of a range, especially in terms of another range, as
+  well as some functions that aid in manipulating ranges for various
+  use cases — the existence of all of which, as of yet, are unproven.
+  Nevertheless, if any of these hypothetical workflows are eventually
+  found to be extant, these functions will all doubtlessly prove invaluable
+  to whatever intrepid, frontier programmer is brave enough to address
+  the challenging burdens, somehow lightened by these desperate grasps
+  for relevance.
   """
 
   @doc ~S"""
@@ -35,6 +54,7 @@ defmodule PassiveSupport.Range do
       iex> includes?(5..1, 4..2)
       true
   """
+  @doc since: "0.1.0"
   @spec includes?(Range.t, any) :: boolean
   def includes?(range, other_start..other_finish), do:
     includes?(range, other_start) and includes?(range, other_finish)
@@ -73,6 +93,7 @@ defmodule PassiveSupport.Range do
       iex> overlaps?(6..4, 5..1)
       true
   """
+  @doc since: "0.1.0"
   @spec overlaps?(Range.t, Range.t) :: boolean
   def overlaps?(start_1..finish_1, start_a..finish_a)
       when ((start_1 > finish_1) and (start_a < finish_a))
@@ -104,6 +125,7 @@ defmodule PassiveSupport.Range do
       iex> adjacent?(10..6, 1..5)
       false
   """
+  @doc since: "0.1.0"
   @spec adjacent?(Range.t, Range.t) :: boolean
   def adjacent?(start_1..finish_1, start_b..finish_b) when start_1 > finish_1, do:
     finish_1-1 == start_b or finish_b-1 == start_1
@@ -131,6 +153,7 @@ defmodule PassiveSupport.Range do
       iex> join(1..5, 10..5)
       ** (ArgumentError) Cannot join 1..5 and 10..5
   """
+  @doc since: "0.1.0"
   @spec join(Range.t, Range.t) :: Range.t
   def join(range_1, range_a) do
     case overlaps?(range_1, range_a) or adjacent?(range_1, range_a) do
@@ -154,6 +177,7 @@ defmodule PassiveSupport.Range do
       iex> size(5..0)
       6
   """
+  @doc since: "0.1.0"
   @spec size(Range.t) :: integer
   def size(start..start), do:
     1
@@ -174,6 +198,7 @@ defmodule PassiveSupport.Range do
       iex> first(5..0)
       5
   """
+  @doc since: "0.1.0"
   @spec first(Range.t) :: integer
   def first(start.._finish), do:
     start
@@ -188,6 +213,7 @@ defmodule PassiveSupport.Range do
       iex> last(5..0)
       0
   """
+  @doc since: "0.1.0"
   @spec last(Range.t) :: integer
   def last(_start..finish), do:
     finish
@@ -202,6 +228,7 @@ defmodule PassiveSupport.Range do
       iex> max(5..0)
       5
   """
+  @doc since: "0.1.0"
   def max(start..finish) when finish < start, do:
     start
   def max(_start..finish), do:
@@ -217,6 +244,7 @@ defmodule PassiveSupport.Range do
       iex> min(5..0)
       0
   """
+  @doc since: "0.1.0"
   def min(start..finish) when finish < start, do:
     finish
   def min(start.._finish), do:
@@ -233,6 +261,7 @@ defmodule PassiveSupport.Range do
       iex> next_page(10..1)
       0..-9
   """
+  @doc since: "0.1.0"
   @spec next_page(Range.t) :: Range.t
   def next_page(start..finish) when finish < start, do:
     finish-1..finish-(1+start-finish)
@@ -250,6 +279,7 @@ defmodule PassiveSupport.Range do
       iex> prev_page(10..1)
       20..11
   """
+  @doc since: "0.1.0"
   @spec prev_page(Range.t) :: Range.t
   def prev_page(start..finish) when finish < start, do:
     (start+(1+start-finish))..finish+(1+start-finish)
