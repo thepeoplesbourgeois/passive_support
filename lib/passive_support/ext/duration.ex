@@ -55,4 +55,20 @@ defmodule PassiveSupport.Duration do
   @spec years(t, number) :: t
   def years(t \\ %Duration{}, time)
   def years(%Duration{years: y} = t, time), do: %{ t | years: y + time }
+
+  defimpl String.Chars do
+    def to_string(duration) do
+      map = Map.from_struct(duration)
+      for unit <- ~W[year month week day hour minute second],
+          amount = map[:"#{unit}s"],
+          amount != 0 do
+        case amount do
+          1 ->
+            [Kernel.to_string(1), " ", unit]
+          plural ->
+            [Kernel.to_string(plural), " ", unit, "s"]
+        end
+      end |> Enum.intersperse(", ") |> IO.chardata_to_string()
+    end
+  end
 end
