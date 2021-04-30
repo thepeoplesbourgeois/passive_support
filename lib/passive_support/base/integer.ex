@@ -50,7 +50,9 @@ defmodule PassiveSupport.Integer do
   import Bitwise
   # Derived from https://stackoverflow.com/questions/32024156/how-do-i-raise-a-number-to-a-power-in-elixir#answer-32030190
   @doc ~S"""
-  Arbitrary-precision exponentiation
+  Arbitrary-precision exponentiation.
+
+  Will be deprecated by Elixir [v1.12.0](https://github.com/elixir-lang/elixir/commit/b11a119f52c882e2ab0f35040ef4a4b4e9d23065)
 
   ## Examples
 
