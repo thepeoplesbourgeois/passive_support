@@ -1,24 +1,26 @@
 defmodule PassiveSupport.Path.Sigil do
-  @moduledoc false
-
-  @doc """
+  @moduledoc """
   # The path sigil
 
-  `~P` transforms its input into the argument to various functions
-  within the `Path` module, for the quick and idiomatic usage of
-  strings as filesystem paths. It accepts a variety of modifiers
-  for accessing various kinds of paths. These modifiers are:
+  `import PassiveSupport.Path.Sigil` will make `~P` activate
+  various functions within the `Path` module, for quick and idiomatic
+  usage of filesystem paths. As its default behavior, `~P[path/to/something]`
+  will expand to the output of `Path.absname("path/to/something")`, but other
+  behaviors can be exposed depending on the modifier provided following the
+  closing delimiter. The enabled modifiers are currently:
 
-  - `'a'` for `Path.absname` (default)
-  - `'b'` for `Path.basename`
-  - `'d'` for `Path.dirname`
-  - `'x'` for `Path.expand`
-  - and `'w'` for `Path.wildcard`
+  - `'a'` for `Path.absname/1` (default)
+  - `'b'` for `Path.basename/1`
+  - `'d'` for `Path.dirname/1`
+  - `'x'` for `Path.expand/1`
+  - `'w'` for `Path.wildcard/1`
+  - and `'wd'` for `Path.wildcard(path, match_dot: true)`
 
-  All of the functions are their single-argument arity variants, and
-  therefore cannot have their behaviors specialized. Additionally, the sigil
-  currently only allows for one modifier at a time, and will raise an
-  `ArgumentError` if more than one is used at a time.
+  Beyond that, there is no means of modifying function behavior any further,
+  and interpolation through `~p` is not yet implemented. They both are on
+  the roadmap for this module, but being that this maintainer fundamentally
+  works on this library in his spare time, the ready date for those
+  functionalities is decidedly TBD.
 
   ## Examples
 
@@ -67,6 +69,10 @@ defmodule PassiveSupport.Path.Sigil do
 
   defmacro sigil_P(path, 'w') do
     quote do: Path.wildcard(unquote(path))
+  end
+
+  defmacro sigil_P(path, 'wd') do
+    quote do: Path.wildcard(unquote(path), match_dot: true)
   end
 
   # TODO: defmacro sigil_p
