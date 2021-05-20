@@ -7,17 +7,32 @@ defmodule PassiveSupport.Map do
 
   @type key :: any
 
-  @doc """
-  Alters `key` according to `fun` within the given `map`.
+  @doc ~S"""
+  Returns a new map with `key` replaced by `new_key` or the return of `fun`
+
+  If `key` is not found within `map`, returns the `map` unaltered.
 
   Useful for when you're shuffling values around inside of a map,
   or, I dunno, going through your music collection and you discover
   you accidentally attributed an entire Beatles album to the Monkees.
+
   Although how you did that is beyond me. You monster.
 
+  ## Examples
 
+      iex> change_key(%{dog: "rusty"}, :dog, :cat)
+      %{cat: "rusty"}
+
+      iex> change_key(%{dog: "rusty"}, :dog, &(:"best_#{&1}"))
+      %{best_dog: "rusty"}
+
+      iex> change_key(%{1 => "foo", 2 => "bar", 5 => "idklol"}, 1, fn _key, map -> Enum.max(Map.keys(map)) + 1 end)
+      %{2 => "bar", 5 => "idklol", 6 => "foo"}
+
+      iex> change_key(%{cake_boss: "you blew it"}, :no_key_here, :oops)
+      %{cake_boss: "you blew it"}
   """
-  @spec change_key(map, key, (key -> key) | ((key, map) -> key)) :: map
+  @spec change_key(map, key, key | (key -> key) | ((key, map) -> key)) :: map
   def change_key(map, key, fun) when is_map_key(map, key) and is_function(fun, 1) do
     {value, map} = Map.pop(map, key)
     put_in(map[fun.(key)], value)
@@ -26,6 +41,11 @@ defmodule PassiveSupport.Map do
     {value, map} = Map.pop(map, key)
     put_in(map[fun.(key, map)], value)
   end
+  def change_key(map, key, new_key) when is_map_key(map, key) do
+    {value, map} = Map.pop(map, key)
+    put_in(map[new_key], value)
+  end
+  def change_key(map, _, _), do: map
 
   @doc ~S"""
   Returns a version of `map` whose keys have all been
