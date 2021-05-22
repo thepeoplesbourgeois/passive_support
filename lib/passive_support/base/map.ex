@@ -3,7 +3,7 @@ defmodule PassiveSupport.Map do
   Convenience functions for working with maps.
   """
 
-  alias PassiveSupport.Item
+  alias PassiveSupport, as: Ps
 
   @type key :: any
 
@@ -71,16 +71,24 @@ defmodule PassiveSupport.Map do
       iex> [:oh, :yay] # existing keys
       iex> atomize_keys!(%{"oh" => "ooh", 'yay' => 'yaaay'})
       %{oh: "ooh", yay: 'yaaay'}
+
       iex> atomize_keys!(%{"oh" => "ooh", "noo" => "noooo"})
-      ** (ArgumentError) argument error
+      ** (PassiveSupport.ExistingAtomError) No atom exists for the values ["noo"]
   """
-  def atomize_keys!(%{} = map),
-    do: map
+  def atomize_keys!(%{} = map) do
+    {atoms, errors} = map
      |> Stream.map(fn {key, value} ->
-          atom = key |> to_string |> String.to_existing_atom
-          {atom, value}
+          case key |> to_string |> Ps.String.safe_existing_atom do
+            {:ok, atom} -> {atom, value}
+            :error -> key
+          end
         end)
-     |> Enum.into(%{})
+     |> Enum.split_with(fn atom? -> is_tuple(atom?) end)
+    case errors do
+      [] -> atoms |> Enum.into(%{})
+      _ -> raise(PassiveSupport.ExistingAtomError, expected: errors)
+    end
+  end
 
   @doc ~S"""
   Returns a `map` with any string keys that safely coerced to existing atoms
@@ -119,7 +127,7 @@ defmodule PassiveSupport.Map do
       %{a: "foo", b: 42}
 
       iex> take!(%{"a" => "foo", "b" => 42, "c" => :ok}, ["c", "e"])
-      ** (MissingKeysError) Expected to find keys ["c", "e"] but only found keys ["c"]
+      ** (PassiveSupport.MissingKeysError) Expected to find keys ["c", "e"] but only found keys ["c"]
   """
   @spec take!(map, list) :: map
   def take!(map, keys \\ [])
@@ -127,9 +135,9 @@ defmodule PassiveSupport.Map do
   def take!(map, keys) when is_list(keys) do
     keys
      |> Enum.filter(&Map.has_key?(map, &1))
-     |> Item.tee(&(unless &1 == keys do
-          raise MissingKeysError, expected: keys, actual: &1
-        end))
+     |> tap(&unless(&1 == keys,
+          do: raise(PassiveSupport.MissingKeysError, expected: keys, actual: &1)
+        ))
     Map.take(map, keys)
   end
 
