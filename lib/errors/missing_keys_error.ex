@@ -1,4 +1,4 @@
-defmodule MissingKeysError do
+defmodule PassiveSupport.MissingKeysError do
   defexception [:message]
 
   def exception(args) do
@@ -8,6 +8,6 @@ defmodule MissingKeysError do
       " but only found keys ",
       inspect(args[:actual])
     ]
-    %MissingKeysError{message: message}
+    %__MODULE__{message: message}
   end
 end

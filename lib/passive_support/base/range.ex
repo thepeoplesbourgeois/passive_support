@@ -151,7 +151,7 @@ defmodule PassiveSupport.Range do
       ** (ArgumentError) Cannot join 1..2 and 5..10
 
       iex> join(1..5, 10..5)
-      ** (ArgumentError) Cannot join 1..5 and 10..5
+      ** (ArgumentError) Cannot join 1..5 and 10..5//-1
   """
   @doc since: "0.1.0"
   @spec join(Range.t, Range.t) :: Range.t

@@ -1,6 +1,7 @@
 defmodule PassiveSupport.ItemTest do
   use ExUnit.Case, async: true
-  doctest PassiveSupport.Item, import: true
+  alias PassiveSupport.Item
+  doctest Item, import: true
   import PassiveSupport.Item
 
   describe "dig" do

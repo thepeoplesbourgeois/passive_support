@@ -14,18 +14,19 @@ defmodule PassiveSupport.Item do
 
   ## Examples
 
-      iex> ", " |> tap(&Enum.join(1..10, &1))
+      iex> ", " |> Item.tap(&Enum.join(1..10, &1))
       "1, 2, 3, 4, 5, 6, 7, 8, 9, 10"
 
-      iex> false |> tap(&(unless &1, do: "oh!"))
+      iex> false |> Item.tap(&(unless &1, do: "oh!"))
       "oh!"
 
-      iex> [5, 4, 3, 2, 1] |> hd |> tap(&(&1 * &1))
+      iex> [5, 4, 3, 2, 1] |> hd |> Item.tap(&(&1 * &1))
       25
 
-      iex> "hello world!" |> tap(&Regex.scan(~r/lo?/, &1))
+      iex> "hello world!" |> Item.tap(&Regex.scan(~r/lo?/, &1))
       [["l"], ["lo"], ["l"]]
   """
+  @deprecated "Use Kernel.then/2 instead"
   def tap(item, fun), do: fun.(item)
 
   @doc """
@@ -45,6 +46,7 @@ defmodule PassiveSupport.Item do
       some_data |> tee(&IO.inspect(&1, label: "encoding as json")) |> Jason.encode!
       # => JSON-encoded data
   """
+  @deprecated "Use Kernel.tap/2 instead"
   def tee(item, fun) do
     fun.(item)
     item
