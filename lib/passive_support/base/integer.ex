@@ -23,6 +23,24 @@ defmodule PassiveSupport.Integer do
     when is_integer(integer)
     and integer > 0
 
+  @doc """
+  Returns the quotient and the remainder of `dividend ÷ divisor`
+
+  ## Examples
+
+      iex> remdiv(3, 2)
+      {1, 1}
+
+      iex> remdiv(-325, 60)
+      {-5, -25}
+
+      iex> remdiv(11, 3)
+      {3, 2}
+  """
+  @spec remdiv(integer, integer) :: {integer, integer}
+  def remdiv(dividend, divisor) when is_integer(dividend) and is_integer(divisor),
+    do: {div(dividend, divisor), rem(dividend, divisor)}
+
   @doc ~S"""
   Arbitrary-precision factorial.
 
