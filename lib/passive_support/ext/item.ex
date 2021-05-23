@@ -144,34 +144,77 @@ defmodule PassiveSupport.Item do
   @doc """
   Traverses into `item` through an arbitrary `path` of keys and indices.
 
-  Think of `dig/3` as an extension of the concept at the heart of
-  `Access.get/3`. There are times when the data you're working with
-  is a deeply-nested structure, and your bigger concern is what a
-  specific part of that data looks like. In cases where you are working
-  with one sort of data type (e.g., maps, structs, tuples, or lists),
-  then you know you can use the same function or macro to dig down
-  through each successive layer of nested data. However, when working
-  with disparate data types, keeping track of the structure of each
-  level of the nested data becomes an exercise in both patience,
-  and trial and error.
+  `dig/3` is an extension of the `Elixir.Access` module, but where a
+  deep-nested structure using `Access` would require a traversal call
+  like:
 
-  The assurance `dig/3` provides is that, until arriving at a leaf node
-  within `item` or fully traversing through `path`, the function will
-  retrieve the element of `item` at the next point within `path`,
-  dispatching to the correct function for doing so based on the
-  structure of the data at the current level of traversal. If `dig`
-  arrives at a `nil` value at any point in traversal, the remainder
-  of the path is dropped, and the value provided as `default` (which,
-  by custom, defaults to `nil` itself) is immediately returned to the
-  caller.
+      nested = [
+        %MyApp.Codebase.Repo{
+          organization: %MyApp.Accounts.Organization{
+            members: [
+              %MyApp.Accounts.Member{
+                id: 1,
+                name: "John Jacob Jingleheimer",
+                email: "jjj@jjjj.jjjjjjjjj.jjjjj.jjj.j",
+                telephone: "555-555-5555"
+              },
+              ...
+            ],
+            name: "Jingleheimer JavaScript Javameisters"
+          },
+          main_branch_name: "main",
+          commits: [...]
+        },
+        %MyApp.Codebase.Repo{
+          organization: %MyApp.Accounts.Organization{
+            members: [
+              %MyApp.Accounts.Member{
+                id: 5,
+                name: "Schmidt.",
+                email: "schmidt.@schmidt.schmidt",
+                telephone: nil
+              },
+              ...
+            ],
+            name: "Schmidt's Serious Software Services."
+          },
+          main_branch_name: "code.",
+          commits: [...]
+        }
+      ]
+
+      get_in(nested, [Access.all(), Access.key(:organization), Access.key(:members), Access.key(:telephone)])
+      ["555-555-5555", nil]
+
+  While the adherence to a strict API allows for fast failure of
+  unexpectedly-behaving code, there are times where either the end goal
+  is strictly to debug quickly, or the repetitively verbose chain of
+  functions does more to obscure the traversed path than clarify it.
+  Worse, the call will fail if you don't realize that the data structure
+  being traversed is, e.g., a keyword list when you called `Access.key/2`,
+  which only works against a map or struct, or when the data structure
+  being traversed is a struct, and you called `Access.get/2` expecting a
+  map or keyword list. It only gets worse when tuples and non-keyword lists
+  get involved.
+
+  `dig/3` reduces the boilerplate and confustion of `Access` by delegating
+  to the proper `Access` call for the proper combination of the data
+  structure currently being traversed, and current key/index within the
+  given `path`. This will continue until arriving at a leaf node of the
+  nested data structure, or fully traversing through all of the keys
+  and indices in `path`. If `dig` arrives at a `nil` value at any point
+  during traversal, the remaining segments of the path are dropped,
+  and the value provided as `default` (which, by custom, defaults to
+  `nil` itself) is immediately returned to the caller.
 
   **Note:** The only event in which this function will raise an exception
-  is when it attempts to traverse the `path` of a scalar value. To guarantee
-  consistency in the traversal rules, trying to traverse a tuple with
-  an out-of-bounds index results in `nil` being returned instead of an
-  `ArgumentError` being raised. Similarly, attempting to dig into a
-  struct at a keyword that it doesn't define will return `nil` instead of
-  raising a `KeyError`. For exception propagation, use `dig!/3` instead.
+  is when it encounters a scalar value in the nested structure while still
+  having `path` to traverse. To guarantee consistency in traversal rules,
+  trying to traverse a tuple with an out-of-bounds index returns `nil`
+  instead of raising an `ArgumentError`. Similarly, attempting to `dig`
+  a keyword that a given struct doesn't define will return `nil` instead of
+  raising a `KeyError`. If you would prefer to propagate exceptions,
+  passive_support also provides `dig!/3`.
 
   ## Examples
 
