@@ -63,7 +63,9 @@ defmodule PassiveSupport.Stream do
 
   That said, the order _is_ still deterministic, all permutations
   of the enumerable will be available by the time the stream is done
-  being processed, and this function by generating permutations out of the map
+  being processed, and this function operates orders of magnitude faster
+  by generating permutations out of this intermediary map than it would
+  by generating them out of a similarly-structured linked list.
 
   ## Examples
 
@@ -87,16 +89,22 @@ defmodule PassiveSupport.Stream do
         [3, 2, 4, 1]
       ]
 
-      iex> 1..32 |> permutations |> Enum.take(2)
+      iex> 1..50 |> permutations |> Enum.take(2)
       [
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-         11,12,13,14,15,16,17,18,19,20,
-         21,22,23,24,25,26,27,28,29,30,
-         31,32],
-        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-         11,12,13,14,15,16,17,18,19,20,
-         21,22,23,24,25,26,27,28,29,30,
-         32,31]
+        [
+          34, 13, 45, 24, 30, 48, 31, 44, 40, 46,
+          49, 27, 47, 32, 12, 38, 10, 33, 1, 2, 3,
+          4, 5, 6, 7, 8, 9, 11, 14, 15, 16, 17, 18,
+          19, 20, 21, 22, 23, 25, 26, 28, 29, 35,
+          36, 37, 39, 41, 42, 43, 50
+        ],
+        [
+          34, 13, 45, 24, 30, 48, 31, 44, 40, 46,
+          49, 27, 47, 32, 12, 38, 10, 33, 1, 2, 3,
+          4, 5, 6, 7, 8, 9, 11, 14, 15, 16, 17, 18,
+          19, 20, 21, 22, 23, 25, 26, 28, 29, 35,
+          36, 37, 39, 41, 42, 50, 43
+        ]
       ]
   """
 	@spec permutations(Enumerable.t) :: Stream.t
