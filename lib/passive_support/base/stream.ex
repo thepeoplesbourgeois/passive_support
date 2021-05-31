@@ -111,8 +111,8 @@ defmodule PassiveSupport.Stream do
   def permutations(enumerable)
   def permutations(enumerable) do
     enumerable
-      |> to_map # allows fast access
-      |> make_permutations
+     |> to_map # allows fast access
+     |> make_permutations
   end
 
   defp make_permutations(map) when map_size(map) == 0 do
