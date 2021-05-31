@@ -107,9 +107,9 @@ defmodule PassiveSupport.Stream do
         ]
       ]
   """
-	@spec permutations(Enumerable.t) :: Stream.t
-	def permutations(enumerable)
-	def permutations(enumerable) do
+  @spec permutations(Enumerable.t) :: Stream.t
+  def permutations(enumerable)
+  def permutations(enumerable) do
     enumerable
       |> to_map # allows fast access
       |> make_permutations
