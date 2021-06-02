@@ -110,19 +110,30 @@ defmodule PassiveSupport.Stream do
   @spec permutations(Enumerable.t) :: Stream.t
   def permutations(enumerable)
   def permutations(enumerable) do
-    enumerable
-     |> to_map # allows fast access
-     |> make_permutations
+    enumap = to_map(enumerable)
+    if map_size(enumap) < 32,
+      do: list_permutations(enumerable),
+      else: enumap # allows fast access
+       |> map_permutations
   end
 
-  defp make_permutations(map) when map_size(map) == 0 do
+  def list_permutations([]), do: [[]]
+  def list_permutations(list) do
+    list
+     |> Enum.to_list
+     |> Stream.flat_map(fn next ->
+          Stream.map(list_permutations(list -- [next]), fn(sublist) -> [next | sublist] end)
+        end)
+  end
+
+  defp map_permutations(map) when map_size(map) == 0 do
     [[]]
   end
-  defp make_permutations(map) when is_map(map),
+  defp map_permutations(map) when is_map(map),
     do: map
      |> Stream.flat_map(fn {index, next} ->
           submap = map
            |> Map.delete(index)
-          Stream.map(make_permutations(submap), fn (sub) -> [next | sub] end)
+          Stream.map(map_permutations(submap), fn (sub) -> [next | sub] end)
         end)
 end

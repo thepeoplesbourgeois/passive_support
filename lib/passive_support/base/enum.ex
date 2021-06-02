@@ -1,5 +1,3 @@
-
-
 defmodule PassiveSupport.Enum do
   @doc """
   Converts an enumerable to a `Map`, using the index of
@@ -39,6 +37,17 @@ defmodule PassiveSupport.Enum do
       |> Stream.with_index
       |> Stream.map(fn {item, item_index} -> {key_function.(item, item_index), item} end)
       |> Enum.into(%{})
+
+
+  @spec async_map(Enum.t, function) :: Enum.t
+  def async_map(enum, func) do
+    1..System.schedulers_online()
+    # TODO: Figure out divvying thie enum up.
+    enum |> Stream.with_index |> Enum.group_by(fn {_, ix} -> rem(ix, System.schedulers_online) end, fn {i, _} -> i end) |> Map.values
+    enum
+     |> Enum.map(&(Task.async(fn -> func.(&1) end)))
+     |> Enum.map(&Task.await/1)
+  end
 
 
   @doc ~S"""
