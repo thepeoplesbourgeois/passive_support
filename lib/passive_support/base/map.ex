@@ -142,7 +142,7 @@ defmodule PassiveSupport.Map do
   end
 
   @doc ~S"""
-  Deletes the struct metadata from structs, but ordinary maps unchanged
+  Deletes the struct metadata from structs, but leaves ordinary maps unchanged
 
   ## Examples
 
