@@ -70,6 +70,28 @@ defmodule PassiveSupport.Enum do
   def none?(enum, fun \\ &(&1))
   def none?(enum, fun), do: !Enum.any?(enum, fun)
 
+  @doc """
+  Deep-converts `enum` to a list.
+
+  ## Examples
+
+      iex> deep_to_list(%{"game_types" => ["card"], "rulesets_known" => [%{"poker" => "texas hold 'em", "hearts" => true}]})
+      [{"game_types", ["card"]}, {"rulesets_known", [[{"hearts", true}, {"poker", "texas hold 'em"}]]}]
+  """
+  @spec deep_to_list(Enumertable.t(Enumerable.t)) :: list(list())
+  def deep_to_list(enum) do
+    Enum.map(enum, fn
+      {key, value} ->
+        if Enumerable.impl_for(value),
+          do: {key, deep_to_list(value)},
+          else: {key, value}
+      value ->
+        if Enumerable.impl_for(value),
+          do: deep_to_list(value),
+          else: value
+    end)
+  end
+
   @doc ~S"""
   Generates a list of all possible permutations of the given enumerable.
 
