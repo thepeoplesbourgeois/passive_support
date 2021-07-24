@@ -1,4 +1,4 @@
-defmodule PassiveSupport.MissingKeysError do
+defmodule PassiveSupport.KeysNotFound do
   defexception [:message]
 
   def exception(args) do
