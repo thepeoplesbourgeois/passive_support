@@ -67,49 +67,49 @@ defmodule PassiveSupport.Logging do
 
   require Logger
   def info(item \\ nil, label \\ nil) do
-    if label, do: Logger.info([label | ":"])
+    if label, do: Logger.info([label, ":"])
     if item, do: Logger.info(inspect(item))
     item
   end
 
   def debug(item \\ nil, label \\ nil) do
-    if label, do: Logger.debug([label | ":"])
+    if label, do: Logger.debug([label, ":"])
     if item, do: Logger.debug(inspect(item))
     item
   end
 
   def warn(item \\ nil, label \\ nil) do
-    if label, do: Logger.warn([label | ":"])
+    if label, do: Logger.warn([label, ":"])
     if item, do: Logger.warn(inspect(item))
     item
   end
 
   def alert(item \\ nil, label \\ nil) do
-    if label, do: Logger.alert([label | ":"])
+    if label, do: Logger.alert([label, ":"])
     if item, do: Logger.alert(inspect(item))
     item
   end
 
   def critical(item \\ nil, label \\ nil) do
-    if label, do: Logger.critical([label | ":"])
+    if label, do: Logger.critical([label, ":"])
     if item, do: Logger.critical(inspect(item))
     item
   end
 
   def emergency(item \\ nil, label \\ nil) do
-    if label, do: Logger.emergency([label | ":"])
+    if label, do: Logger.emergency([label, ":"])
     if item, do: Logger.emergency(inspect(item))
     item
   end
 
   def error(item \\ nil, label \\ nil) do
-    if label, do: Logger.error([label | ":"])
+    if label, do: Logger.error([label, ":"])
     if item, do: Logger.error(inspect(item))
     item
   end
 
   def notice(item \\ nil, label \\ nil) do
-    if label, do: Logger.notice([label | ":"])
+    if label, do: Logger.notice([label, ":"])
     if item, do: Logger.notice(inspect(item))
     item
   end
