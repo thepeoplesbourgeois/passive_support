@@ -73,7 +73,7 @@ defmodule PassiveSupport.Map do
       %{oh: "ooh", yay: 'yaaay'}
 
       iex> atomize_keys!(%{"oh" => "ooh", "noo" => "noooo"})
-      ** (PassiveSupport.ExistingAtomError) No atom exists for the values ["noo"]
+      ** (PassiveSupport.NonexistentAtoms) No atoms exist for the values ["noo"]
   """
   def atomize_keys!(%{} = map) do
     {atoms, errors} = map
@@ -86,7 +86,7 @@ defmodule PassiveSupport.Map do
      |> Enum.split_with(fn atom? -> is_tuple(atom?) end)
     case errors do
       [] -> atoms |> Enum.into(%{})
-      _ -> raise(PassiveSupport.ExistingAtomError, expected: errors)
+      _ -> raise(PassiveSupport.NonexistentAtoms, expected: errors)
     end
   end
 
@@ -127,7 +127,7 @@ defmodule PassiveSupport.Map do
       %{a: "foo", b: 42}
 
       iex> take!(%{"a" => "foo", "b" => 42, "c" => :ok}, ["c", "e"])
-      ** (PassiveSupport.MissingKeysError) Expected to find keys ["c", "e"] but only found keys ["c"]
+      ** (PassiveSupport.KeysNotFound) Expected to find keys ["c", "e"] but only found keys ["c"]
   """
   @spec take!(map, list) :: map
   def take!(map, keys \\ [])
@@ -135,8 +135,9 @@ defmodule PassiveSupport.Map do
   def take!(map, keys) when is_list(keys) do
     keys
      |> Enum.filter(&Map.has_key?(map, &1))
+     |> tap(&IO.inspect/1)
      |> tap(&unless(&1 == keys,
-          do: raise(PassiveSupport.MissingKeysError, expected: keys, actual: &1)
+          do: raise(PassiveSupport.KeysNotFound, expected: keys, actual: &1)
         ))
     Map.take(map, keys)
   end
