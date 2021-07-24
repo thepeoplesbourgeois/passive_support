@@ -14,8 +14,7 @@ defmodule PassiveSupport.PostBody do
       ...>     "we got" => "all", "the edge" => "cases", "we can think of" => "covered"
       ...>   }
       ...> })
-      ~S(#{
-        }cancel_url="https://localhost:4001/membership/nevermind"&#{
+      ~S(cancel_url="https://localhost:4001/membership/nevermind"&#{
         }just_to_make_sure[the+edge]=cases&#{
         }just_to_make_sure[we+can+think+of]=covered&#{
         }just_to_make_sure[we+got]=all&#{
@@ -29,6 +28,9 @@ defmodule PassiveSupport.PostBody do
         }payment_types[2]=ass&#{
         }success_url="https://localhost:4001/membership/subscribe?session_id={CHECKOUT_SESSION_ID}"#{
       })
+
+      iex> parse_form_data(%{something: :dotcom})
+      [{"something", :dotcom}]
   """
   @spec parse_form_data(map) :: String.t
   def parse_form_data(enum) when is_map(enum), do: do_parse_form_data(enum)
@@ -43,7 +45,6 @@ defmodule PassiveSupport.PostBody do
               else: [construct_path([index | datum_path]), sanitize_input(value)] |> Enum.join("=")
         end)
      |> Enum.join("&")
-     |> IO.inspect(label: "list data")
   end
   defp do_parse_form_data(enum, datum_path) do
     enum
@@ -54,20 +55,16 @@ defmodule PassiveSupport.PostBody do
               else: [construct_path([key | datum_path]), sanitize_input(value)] |> Enum.join("=")
         end)
      |> Enum.join("&")
-     |> IO.inspect(label: "map data")
   end
 
   defp construct_path(path, path_iolist \\ [])
   defp construct_path([key | []], path_iolist),
-    do: key
-     |> sanitize_input
-     |> IO.inspect(label: "path_root")
-     |> then(&[&1 | path_iolist])
-     |> IO.chardata_to_string()
+    do: IO.chardata_to_string([sanitize_input(key) | path_iolist])
   defp construct_path([key_or_index | path], path_iolist),
     do: construct_path(path, [["[" , sanitize_input(key_or_index), "]"], path_iolist])
 
   defp sanitize_input(index) when is_integer(index), do: to_string(index)
+  defp sanitize_input(input) when is_atom(input), do: to_string(input)
   defp sanitize_input("" <> input) do
     case String.match?(input, ~r"[/&?]") do
       true -> input |> URI.parse |> to_string |> inspect
