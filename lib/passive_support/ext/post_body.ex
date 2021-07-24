@@ -30,7 +30,7 @@ defmodule PassiveSupport.PostBody do
       })
 
       iex> parse_form_data(%{something: :dotcom})
-      [{"something", :dotcom}]
+      "something=dotcom"
   """
   @spec parse_form_data(map) :: String.t
   def parse_form_data(enum) when is_map(enum), do: do_parse_form_data(enum)
