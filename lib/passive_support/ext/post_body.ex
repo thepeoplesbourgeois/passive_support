@@ -33,26 +33,37 @@ defmodule PassiveSupport.PostBody do
       "something=dotcom"
   """
   @spec parse_form_data(map) :: String.t
+  def parse_form_data([{_,_}|_] = enum), do: do_parse_form_data(enum)
   def parse_form_data(enum) when is_map(enum), do: do_parse_form_data(enum)
-  defp do_parse_form_data(enum, datum_path \\ [])
-  defp do_parse_form_data(enum, datum_path) when is_list(enum) do
+  defp do_parse_form_data(enum, data_path \\ [])
+  defp do_parse_form_data([{_,_}|_] = enum, data_path) do
+    enum
+     |> Enum.map(fn
+          {key, value} ->
+            if Enumerable.impl_for(value),
+              do: do_parse_form_data(value, [key | data_path]),
+              else: [construct_path([key | data_path]), sanitize_input(value)] |> Enum.join("=")
+        end)
+     |> Enum.join("&")
+  end
+  defp do_parse_form_data(%{} = enum, data_path) do
+    enum
+     |> Enum.map(fn
+          {key, value} ->
+            if Enumerable.impl_for(value),
+              do: do_parse_form_data(value, [key | data_path]),
+              else: [construct_path([key | data_path]), sanitize_input(value)] |> Enum.join("=")
+        end)
+     |> Enum.join("&")
+  end
+  defp do_parse_form_data([_|_] = enum, data_path) do
     enum
      |> Stream.with_index
      |> Enum.map(fn
           {value, index} ->
             if Enumerable.impl_for(value),
-              do: do_parse_form_data(value, [index | datum_path]),
-              else: [construct_path([index | datum_path]), sanitize_input(value)] |> Enum.join("=")
-        end)
-     |> Enum.join("&")
-  end
-  defp do_parse_form_data(enum, datum_path) do
-    enum
-     |> Enum.map(fn
-          {key, value} ->
-            if Enumerable.impl_for(value),
-              do: do_parse_form_data(value, [key | datum_path]),
-              else: [construct_path([key | datum_path]), sanitize_input(value)] |> Enum.join("=")
+              do: do_parse_form_data(value, [index | data_path]),
+              else: [construct_path([index | data_path]), sanitize_input(value)] |> Enum.join("=")
         end)
      |> Enum.join("&")
   end
@@ -63,8 +74,7 @@ defmodule PassiveSupport.PostBody do
   defp construct_path([key_or_index | path], path_iolist),
     do: construct_path(path, [["[" , sanitize_input(key_or_index), "]"], path_iolist])
 
-  defp sanitize_input(index) when is_integer(index), do: to_string(index)
-  defp sanitize_input(input) when is_atom(input), do: to_string(input)
+  defp sanitize_input(index) when is_integer(index) or is_atom(index), do: to_string(index)
   defp sanitize_input("" <> input) do
     case String.match?(input, ~r"[/&?]") do
       true -> input |> URI.parse |> to_string |> inspect
