@@ -7,6 +7,7 @@ defmodule PassiveSupport.Mixfile do
      elixir: "~> 1.9",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     package: package(),
      deps: deps(),
      xref: xref(Mix.env)]
   end
@@ -39,6 +40,17 @@ defmodule PassiveSupport.Mixfile do
     [
       {:benchee, "~> 1.0.1", only: :dev},
       {:ex_doc, "~> 0.24.1", only: :dev}
+    ]
+  end
+
+  defp package do
+    [
+      files: ~w(lib priv LICENSE* README* mix.exs),
+      licenses: ["MIT"],
+      links: %{
+        "Github" => "https://github.com/thepeoplesbourgeois/passive_support",
+        "Keep my lights on" => "https://ko-fi.com/thepeoplesbourgeois36330"
+      }
     ]
   end
 end
