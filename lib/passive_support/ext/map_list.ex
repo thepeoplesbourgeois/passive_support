@@ -49,10 +49,12 @@ defmodule MapList do
   (or stop at the sentinel value, as parts of the `:array` module do).
 
       iex> map_list = MapList.new(~W"Hello elixir world!")
-      ...>   |> MapList.insert_at(1, "brave")
+      ...>  |> MapList.insert_at(1, "brave")
       %MapList["Hello", "brave", "elixir", "world!"]
       iex> map_list
-      ...>   |> MapList.replace_at(1, "awesome")
+      ...>  |> MapList.replace_at(1, "awesome")
       %MapList["Hello", "awesome", "elixir", "world!"]
   """
+
+  @moduledoc false
 end
