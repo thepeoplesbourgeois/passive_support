@@ -15,11 +15,10 @@ defmodule PassiveSupport.Atom do
 
       iex> exists?("false")
       true
-
       iex> exists?("nil")
       true
   """
-  @spec exists?(atom) :: boolean
+  @spec exists?(String.t | atom) :: boolean
   def exists?(atom) when is_atom(atom), do: true
   def exists?(string) when is_binary(string) do
     case safe_existing_atom(string) do
@@ -51,8 +50,8 @@ defmodule PassiveSupport.Atom do
       iex> from_string("what's all this then?")
       nil
   """
-  @spec from_string(String.t()) :: atom() | nil
-  def from_string(atomish) do
+  @spec from_string(String.t) :: atom | nil
+  def from_string("" <> atomish) do
     case safe_existing_atom(atomish) do
       {:ok, atom} -> atom
       _ -> nil

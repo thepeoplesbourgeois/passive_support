@@ -54,7 +54,10 @@ defmodule PassiveSupport.String do
   defguardp valid_length(length) when is_integer(length) and length > 0
 
   @doc ~S"""
-  Splits a string according to a given length or lengths.
+  Splits a string by a given length or lengths.
+
+  When one length is given, splits the string into a list of substrings
+
   When a list of lengths is given, returns a list of lists
   of substrings of the given lengths. If the string
   does not fit within the given length(s), the final substring
@@ -94,7 +97,7 @@ defmodule PassiveSupport.String do
   def length_split(""<>string, length, first_split: true) when valid_length(length), do:
     String.slice(string, 0, length)
   def length_split(""<>string, length, first_split: false) when valid_length(length), do:
-    string |> String.graphemes |> Stream.chunk_every(length) |> Enum.map(&Enum.join(&1))
+    string |> String.graphemes |> Stream.chunk_every(length) |> Enum.map(&Enum.join/1)
   def length_split("" <> string, [], _opts), do: string
   def length_split("" <> string, lengths, first_split: true) when is_list(lengths), do:
     do_length_split(String.graphemes(string), lengths)
@@ -122,22 +125,18 @@ defmodule PassiveSupport.String do
   end
 
   @doc ~S"""
-  Safely casts the string to an atom, returning {:ok, atom} if successful,
-  and {:error, default} if not. Default defaults to `nil` by defualt,
-  the safest default default, if ever there were a good default to default to.
-
-  `default` is type-guarded and must be an atom.
+  Safely casts the string to an atom, returning `{:ok, atom}` if successful
+  and `:error` if not.
 
   ## Examples
 
       iex> safe_existing_atom("ok")
       {:ok, :ok}
-
       iex> safe_existing_atom("not_particularly_ok")
       :error
   """
   @spec safe_existing_atom(String.t) :: {:ok, atom} | :error
-  def safe_existing_atom(string) do
+  def safe_existing_atom("" <> string) do
     {:ok, String.to_existing_atom(string)}
   rescue
     ArgumentError -> :error

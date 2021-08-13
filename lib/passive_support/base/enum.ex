@@ -18,7 +18,7 @@ defmodule PassiveSupport.Enum do
 
   @doc ~S"""
   Not to be confused with Enum.map/2, returns a `Map` with the key for each
-  item derived by the return of `key_function(item [, item_index])`
+  item derived by the return of `key_function(item)` or `key_function(item, index)`
 
   ## Examples
 

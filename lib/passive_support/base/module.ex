@@ -22,6 +22,7 @@ defmodule PassiveSupport.Module do
         iex> check_for_export(Integer, :possibly_private_but_equally_likely_not_to_exist)
         nil
   """
+  @spec check_for_export(atom, atom) :: {:function | :macro, [non_neg_integer()]} | nil
   def check_for_export(module, export) do
     filter = &Enum.filter(&1, fn {call, _} -> call == export end)
 
