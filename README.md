@@ -2,6 +2,8 @@
 
 **Helpful functions for handling data in Elixir, inspired by the Ruby library ActiveSupport**
 
+<script type='text/javascript' src='https://storage.ko-fi.com/cdn/widget/Widget_2.js'></script><script type='text/javascript'>kofiwidget2.init('I need money to live!', '#29abe0', 'Z8Z55L1K8');kofiwidget2.draw();</script>
+
 ## Installation
 
 Add passive_support to your list of dependencies in `mix.exs`:
