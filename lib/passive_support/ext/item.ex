@@ -239,7 +239,7 @@ end
 
 defprotocol PassiveSupport.Blank do
   @moduledoc ~S"""
-  Protocol enabling the `PassiveSupport.Item` functions `blank?/1`, `present?/1`, and `presence/1`.
+  Protocol enabling the functions `PassiveSupport.Item.blank?/1`, `PassiveSupport.Item.present?/1`, and `PassiveSupport.Item.presence/1`.
 
   To ensure those functions behave properly with your own structs, simply define how they implement
   `PassiveSupport.Blank.blank?/1`. For instance, the implementation for strings is:
