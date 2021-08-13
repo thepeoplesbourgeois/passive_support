@@ -57,16 +57,22 @@ defmodule PassiveSupport.String do
   Splits a string by a given length or lengths.
 
   When one length is given, splits the string into a list of substrings
+  of that length.
 
   When a list of lengths is given, returns a list of lists
-  of substrings of the given lengths. If the string
-  does not fit within the given length(s), the final substring
-  will be the remainder of the string.
+  of substrings of the given lengths.
 
-  To retrieve only the result of the first split of the string,
-  pass `first_split: true`. This is useful when the lengths of
-  your substrings sum up to the length of the original string,
-  and you want to access those substrings directly.
+  If the string does not fit within the given length(s),
+  the final substring will be the length of the remainder
+  of the string.
+
+  To retrieve only the first `length` or `lengths` of the string,
+  pass `first_split: true`. Note that in the case of a single `length`,
+  this is equivalent to calling `String.slice(string, 0..length)`, or
+  `binary_part(string, 0, length)`. This is useful when, while supplying
+  multiple lengths, only the first `lengths` of the given string are important
+  to the program, or when the sum of `lengths` is equal to the length
+  of the original string.
 
   ## Examples
 
