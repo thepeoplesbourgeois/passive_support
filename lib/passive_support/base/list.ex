@@ -1,4 +1,8 @@
 defmodule PassiveSupport.List do
+  @moduledoc """
+  Functions for working with lists.
+  """
+
   require Logger
 
   @doc ~S"""

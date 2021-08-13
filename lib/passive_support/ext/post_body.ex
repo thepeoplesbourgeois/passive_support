@@ -1,4 +1,8 @@
 defmodule PassiveSupport.PostBody do
+  @moduledoc """
+  Functions for working with `www-form-urlencoded` data
+  """
+
   @doc ~s"""
   Deep-parses the map into a string formatted according to the `www-form-urlencoded` spec.
 

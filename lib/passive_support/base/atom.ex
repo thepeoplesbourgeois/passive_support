@@ -1,4 +1,8 @@
 defmodule PassiveSupport.Atom do
+  @moduledoc """
+  Functions for working with atoms and strings which may reference atoms
+  """
+
   import PassiveSupport.String, only: [safe_existing_atom: 1]
   @doc """
   Returns true if the passed-in value resembles an existing atom

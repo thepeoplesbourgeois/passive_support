@@ -1,6 +1,10 @@
 
 
 defmodule PassiveSupport.Enum do
+  @moduledoc """
+  Functions extending the functionality of enumerables.
+  """
+
   @doc """
   Converts an enumerable to a `Map`, using the index of
   each item as the item's key.

@@ -1,4 +1,4 @@
-defmodule MapList do
+defmodule PassiveSupport.MapList do
   @moduledoc """
   **This moduledoc is provided to give insight into the
   ideal working shape of the MapList. It is not yet implemented.

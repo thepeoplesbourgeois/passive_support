@@ -1,4 +1,7 @@
 defmodule PassiveSupport.Stream do
+  @moduledoc """
+  Helper functions for working with enumerables as streams.
+  """
   import PassiveSupport.Enum, only: [to_map: 1]
 
   @doc """

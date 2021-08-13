@@ -1,6 +1,8 @@
 defmodule PassiveSupport.Path.Sigil do
   @moduledoc """
-  # The path sigil
+  Quickly and idiomatically build filesystem paths by using `~P`
+
+  ### The path sigil
 
   `import PassiveSupport.Path.Sigil` will make `~P` activate
   various functions within the `Path` module, for quick and idiomatic

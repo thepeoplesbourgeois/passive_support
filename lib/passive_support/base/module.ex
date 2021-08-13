@@ -1,6 +1,6 @@
 defmodule PassiveSupport.Module do
   @moduledoc """
-    Convenience functions and helpers for module introspection
+  Convenience functions and helpers for module introspection
   """
 
   @doc """

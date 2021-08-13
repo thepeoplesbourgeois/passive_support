@@ -1,4 +1,8 @@
 defmodule PassiveSupport.Integer do
+  @moduledoc """
+  Functions and guards for working with integers
+  """
+
   import Integer, only: [is_odd: 1, is_even: 1]
   @doc """
   Qualifies if `integer` is an integer less than 0.
@@ -131,10 +135,11 @@ defmodule PassiveSupport.Integer do
     spacing = opts[:spacing] || 3
     integer
       |> Integer.digits
-      |> Stream.map(&to_string/1)
       |> Enum.reverse
+      |> Stream.map(&to_string/1)
       |> Stream.chunk_every(spacing)
-      |> Enum.join(separator)
+      |> Stream.intersperse(separator)
+      |> Enum.join
       |> String.reverse
   end
 

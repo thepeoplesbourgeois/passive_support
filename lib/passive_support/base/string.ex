@@ -1,4 +1,8 @@
 defmodule PassiveSupport.String do
+  @moduledoc """
+  Helper functions for working with strings and UTF-8 binary data.
+  """
+
   @doc ~S"""
   Converts the provided pattern to a regular expression, if necessary,
   and then invokes `Regex.run` on the expression and the string.

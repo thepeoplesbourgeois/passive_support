@@ -1,4 +1,8 @@
 defmodule PassiveSupport.MapSet do
+  @moduledoc """
+  Functions for working with `MapSet`s.
+  """
+
   @dialyzer {:nowarn_function, toggle: 2}
 
   @doc ~S"""
