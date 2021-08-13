@@ -135,7 +135,7 @@ defmodule PassiveSupport.Map do
   def take!(map, keys) when is_list(keys) do
     keys
      |> Enum.filter(&Map.has_key?(map, &1))
-     |> tap(&unless(&1 == keys,
+     |> Ps.Item.tee(&unless(&1 == keys,
           do: raise(PassiveSupport.KeysNotFound, expected: keys, actual: &1)
         ))
     Map.take(map, keys)

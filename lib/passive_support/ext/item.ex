@@ -26,7 +26,7 @@ defmodule PassiveSupport.Item do
       iex> "hello world!" |> Item.tap(&Regex.scan(~r/lo?/, &1))
       [["l"], ["lo"], ["l"]]
   """
-  @deprecated "Use Kernel.then/2 instead"
+  # @deprecated "Use Kernel.then/2 instead"
   def tap(item, fun), do: fun.(item)
 
   @doc """
@@ -46,7 +46,7 @@ defmodule PassiveSupport.Item do
       some_data |> tee(&IO.inspect(&1, label: "encoding as json")) |> Jason.encode!
       # => JSON-encoded data
   """
-  @deprecated "Use Kernel.tap/2 instead"
+  # @deprecated "Use Kernel.tap/2 instead"
   def tee(item, fun) do
     fun.(item)
     item
