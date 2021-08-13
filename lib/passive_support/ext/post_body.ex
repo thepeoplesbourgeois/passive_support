@@ -5,16 +5,16 @@ defmodule PassiveSupport.PostBody do
   ## Examples
 
       iex> parse_form_data(%{
-      ...>   "success_url" => "https://localhost:4001/membership/subscribe?session_id={CHECKOUT_SESSION_ID}",
-      ...>   "cancel_url" => "https://localhost:4001/membership/nevermind",
-      ...>   "payment_types" => ["grass", "gas", "ass"],
+      ...>   "success_url" => "https://localhost:4001/foo/bert?id={ID}",
+      ...>   "cancel_url" => "https://localhost:4001/foo/bar",
+      ...>   "payment_types" => ["cash", "card", "cheque"],
       ...>   "line_items" => [%{"price" => "five dollars", "quantity" => 1}, %{"line" => "line", "item" => "item"}],
       ...>   "mode" => "subscription",
       ...>   "just_to_make_sure" => %{
       ...>     "we got" => "all", "the edge" => "cases", "we can think of" => "covered"
       ...>   }
       ...> })
-      ~S(cancel_url="https://localhost:4001/membership/nevermind"&#{
+      ~S(cancel_url="https://localhost:4001/foo/bar"&#{
         }just_to_make_sure[the+edge]=cases&#{
         }just_to_make_sure[we+can+think+of]=covered&#{
         }just_to_make_sure[we+got]=all&#{
@@ -23,10 +23,10 @@ defmodule PassiveSupport.PostBody do
         }line_items[1][item]=item&#{
         }line_items[1][line]=line&#{
         }mode=subscription&#{
-        }payment_types[0]=grass&#{
-        }payment_types[1]=gas&#{
-        }payment_types[2]=ass&#{
-        }success_url="https://localhost:4001/membership/subscribe?session_id={CHECKOUT_SESSION_ID}"#{
+        }payment_types[0]=cash&#{
+        }payment_types[1]=card&#{
+        }payment_types[2]=cheque&#{
+        }success_url="https://localhost:4001/foo/bert?id={ID}"#{
       })
 
       iex> parse_form_data(%{something: :dotcom})
