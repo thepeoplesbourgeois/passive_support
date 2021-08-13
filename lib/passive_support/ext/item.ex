@@ -53,9 +53,8 @@ defmodule PassiveSupport.Item do
   end
 
   @doc ~S"""
-  Returns `true` of any value that would return `true` with `Enum.empty?/1`,
-  as well as to bare tuples, binaries with no data, and strings containing
-  only whitespace, `nil`, and `false`. Returns `false` for any other value.
+  Returns `true` for empty enumerables, empty tuples, whitespace-only strings,
+  `nil`, and `false`; returns `false` for any other value.
 
   Note that while a string containing only whitespace can be considered blank,
   a charlist of the same nature will return `false`. Because charlists are
@@ -99,7 +98,7 @@ defmodule PassiveSupport.Item do
       iex> present?(%{})
       false
       iex> present?(MapSet.new(1..10))
-      false
+      true
       iex> present?(0)
       true
       iex> present?(nil)
@@ -118,7 +117,7 @@ defmodule PassiveSupport.Item do
     !blank?(item)
 
   @doc ~S"""
-  Returns `nil` for any `blank?/1` value, and returns the value back otherwise.
+  Returns the value for any `present?/1` value and `nil` for any `blank?/1` value.
 
   ## Examples
 
@@ -239,6 +238,21 @@ end
 
 
 defprotocol PassiveSupport.Blank do
+  @moduledoc ~S"""
+  Protocol enabling the `PassiveSupport.Item` functions `blank?/1`, `present?/1`, and `presence/1`.
+
+  To ensure those functions behave properly with your own structs, simply define how they implement
+  `PassiveSupport.Blank.blank?/1`. For instance, the implementation for strings is:
+
+  ```elixir
+  defimpl PassiveSupport.Blank, for: BitString do
+    def blank?(<<>>), do: true
+    def blank?(""<>string),
+      do: String.match?(string, ~r/\A[[:space:]]*\z/u)
+  end
+  ```
+  """
+
   @fallback_to_any true
 
   @spec blank?(Item.t) :: boolean
@@ -247,10 +261,9 @@ end
 
 defimpl PassiveSupport.Blank, for: BitString do
   @spec blank?(binary) :: boolean
-  def blank?(<<>>), do:
-    true
-  def blank?(""<>string), do:
-    String.match?(string, ~r/\A[[:space:]]*\z/u)
+  def blank?(<<>>), do: true
+  def blank?(""<>string),
+    do: String.match?(string, ~r/\A[[:space:]]*\z/u)
 end
 
 defimpl PassiveSupport.Blank, for: Map do
@@ -271,10 +284,13 @@ defimpl PassiveSupport.Blank, for: List do
     do: list == []
 end
 
+defimpl PassiveSupport.Blank, for: MapSet do
+  @spec blank?(MapSet.t) :: boolean
+  def blank?(set), do: Enum.empty?(set)
+end
+
 defimpl PassiveSupport.Blank, for: Any do
   @spec blank?(any) :: boolean
-  def blank?(%MapSet{}),
-    do: true
 
   def blank?(item) when is_struct(item),
     do: item
