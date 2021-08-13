@@ -7,6 +7,7 @@ defmodule PassiveSupport.Mixfile do
      elixir: "~> 1.9",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     description: description(),
      package: package(),
      deps: deps(),
      xref: xref(Mix.env)]
@@ -43,9 +44,13 @@ defmodule PassiveSupport.Mixfile do
     ]
   end
 
+  defp description do
+    "Helpful modules meant to extend the Elixir standard library, inspired by the Ruby gem `active_support`."
+  end
+
   defp package do
     [
-      files: ~w(lib priv LICENSE* README* mix.exs),
+      files: ~w(lib LICENSE* README* mix.exs),
       licenses: ["MIT"],
       links: %{
         "Github" => "https://github.com/thepeoplesbourgeois/passive_support",
