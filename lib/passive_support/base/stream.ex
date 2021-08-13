@@ -63,9 +63,9 @@ defmodule PassiveSupport.Stream do
 
   That said, the order _is_ still deterministic, all permutations
   of the enumerable will be available by the time the stream is done
-  being processed, and this function operates orders of magnitude faster
+  being processed, and this function scales far more effectively
   by generating permutations out of this intermediary map than it would
-  by generating them out of a similarly-structured linked list.
+  by generating them out of the equivalent list.
 
   ## Examples
 
