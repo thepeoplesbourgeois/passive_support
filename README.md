@@ -10,7 +10,7 @@ Add passive_support to your list of dependencies in `mix.exs`:
 ```elixir
   defp deps do
     [
-      {:passive_support, "~> 0.8.0"}
+      {:passive_support, "~> 0.8.1"}
     ]
   end
 ```
