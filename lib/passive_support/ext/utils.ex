@@ -10,11 +10,16 @@ defmodule PassiveSupport.Utils do
   def env(), do: @env
 
   @doc """
+  Start a nonblocking instance of `IEx.Pry`
+
   Starts a Pry session at the line of code where invoked, in a nonblocking
-  manner with respect to the calling process, but only when the
+  manner with respect to the calling process, but only when the compile-time
+  `env/0` is `:dev`.
+
+  Inlined by the compiler.
   """
   defmacro prytask do
-    if env() == :dev, do: (quote do
+    if @env == :dev, do: (quote do
       Task.start fn ->
         require IEx
         IEx.pry
