@@ -34,6 +34,8 @@ defmodule PassiveSupport.Atom do
   @doc """
   If able, casts the string to an existing atom, returning `nil` if not.
 
+  Also passes atoms through, for convenience.
+
   ## Examples
 
       iex> from_string("ok")
@@ -53,8 +55,12 @@ defmodule PassiveSupport.Atom do
 
       iex> from_string("what's all this then?")
       nil
+
+      iex> from_string(:foo)
+      :foo
   """
-  @spec from_string(String.t) :: atom | nil
+  @spec from_string(String.t | atom) :: atom | nil
+  def from_string(atomish) when is_atom(atomish), do: atomish
   def from_string("" <> atomish) do
     case safe_existing_atom(atomish) do
       {:ok, atom} -> atom
