@@ -32,17 +32,17 @@ defmodule PassiveSupport.Integer do
 
   ## Examples
 
-      iex> remdiv(3, 2)
+      iex> divrem(3, 2)
       {1, 1}
 
-      iex> remdiv(-325, 60)
+      iex> divrem(-325, 60)
       {-5, -25}
 
-      iex> remdiv(11, 3)
+      iex> divrem(11, 3)
       {3, 2}
   """
-  @spec remdiv(integer, integer) :: {integer, integer}
-  def remdiv(dividend, divisor) when is_integer(dividend) and is_integer(divisor),
+  @spec divrem(integer, integer) :: {integer, integer}
+  def divrem(dividend, divisor) when is_integer(dividend) and is_integer(divisor),
     do: {div(dividend, divisor), rem(dividend, divisor)}
 
   @doc ~S"""
