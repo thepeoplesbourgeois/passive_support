@@ -113,7 +113,7 @@ defmodule PassiveSupport.Duration do
       ~U[2020-01-02 12:00:00Z]
 
       iex> 1 |> month |> before(~U[2021-03-31 12:00:00Z])
-      ~U[2020-02-28 12:00:00Z]
+      ~U[2021-02-28 12:00:00Z]
   """
 
   @spec ago(Duration.t, DateTime.t) :: DateTime.t
