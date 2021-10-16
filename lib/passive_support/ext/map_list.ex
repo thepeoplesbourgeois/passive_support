@@ -1,16 +1,17 @@
 defmodule PassiveSupport.MapList do
   @moduledoc """
-  **This moduledoc is provided to give insight into the
-  ideal working shape of the MapList. It is not yet implemented.
-  There's literally nothing to see here as of now, besides this,
-  what is very possibly the first ever recorded instance
-  of technical documentation fiction.**
+  \*\* Planned \*\*
+
+  **This moduledoc is speculative, meant inform the ideal
+  working shape of a MapList data structure. It is not yet implemented,
+  however, and there is no set timetable for completion as of now.**
 
   Functions for interacting with a list of data in an indexed
-  manner. Because `Map`s are not a lightweight structure, this
-  module is recommended for edge cases in which normal traversal
+  manner. As maps are not a lightweight structure, usage of this
+  data structure is recommended for edge cases in which normal traversal
   of a `List` would otherwise be too time inefficient for frequent
-  tasks.
+  tasks. E.g., shuffling an arbitrarily large collection,
+  or generating permutations.
 
   MapLists are implemented to behave as a `List` in almost all
   cases. The notable exception being that a `MapList` provides a
@@ -20,7 +21,7 @@ defmodule PassiveSupport.MapList do
   You can also call `MapList.to_list/1` to get a list of the
   `{index, item}` pairs.
 
-      iex> MapList.new(["Hello","elixir","world!"])
+      iex> MapList.new(~W[Hello elixir world!])
       %MapList["Hello", "elixir", "world!"]
 
   Since MapLists can't be destructured, functions are provided to
