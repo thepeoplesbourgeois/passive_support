@@ -1,0 +1,26 @@
+## v 0.8.3
+
+### New Features
+
+- A changelog!
+- `Ps.Utils` module
+  - Includes an interface to `Ps.Logging` in case you don't feel like typing
+    the extra 2 characters
+    - Me.
+    - Also, hitting the "L" is so much more effort than hitting "U". I mean,
+      you have to remember that your ring finger is right there on the L when
+      resting on the home row keys, and ain't nobody (Me.) got time for that.
+  - `env/0` returns which environment your app was compiled in (with a caveat.
+    See its documentation)
+  - The `prytask/0` macro invokes `IEx.pry/0`, in the context where it's called,
+    without blocking the process it's called from. Perfect for inspecting the
+    `conn` or `socket` without causing a request timeout. And probably for other
+    things, too!
+
+### Fixes
+
+- `Ps.Atom.from_string/1` will pass atoms through unaltered
+- The `Ps.Blank` protocol now properly detects blank/present `MapSet`s
+- `Ps.FormData.parse_form_data/1` is renamed to `Ps.FormData.form_encoded/1`
+  to be more logically accurate, given what it does, which is not to parse a
+  form's data, but in fact, to convert an Elixir data structure _to_ form data

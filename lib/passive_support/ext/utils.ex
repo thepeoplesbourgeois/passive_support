@@ -4,7 +4,15 @@ defmodule PassiveSupport.Utils do
   end
 
   @doc """
-  Zippy check of what the `config_env` was at compile time
+  Zippy check of what the `config_env` was at compile time...
+
+  ... that is, provided you
+
+  ```elixir
+  config :mix, env: config_env()
+  ```
+
+  in your `config/config.exs` file. Otherwise it just gives you `nil`.
   """
   @env Application.get_env(:mix, :env)
   def env(), do: @env
