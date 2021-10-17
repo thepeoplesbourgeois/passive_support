@@ -8,15 +8,13 @@ defmodule PassiveSupport.Logging do
   2. To keep `IO.inspect` and `Kernel.inspect` from truncating away data
      you might need if you intend, e.g., to save a function's return
      as fixture data for debugging purposes
-  i. Not needing to temporarily `require Logger` when you're debugging some module
-     yet *aren't* using IEx to do so, because you're computer science's version of
-     a Luddite, I guess
+  3. Not needing to temporarily `require Logger` when you're debugging a module
   """
 
   import Kernel, except: [inspect: 1, inspect: 2]
 
   @doc """
-  Sensible defaults for `IO.inspect` and `Kernel.inspect` when you want to see a value in its entirety
+  Sensible defaults for see a value in its entirety through `IO.inspect` and `Kernel.inspect`
   """
   @spec inspect_opts :: [printable_limit: :infinity, limit: :infinity, width: 170, pretty: true]
   def inspect_opts do
