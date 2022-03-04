@@ -23,8 +23,8 @@ defmodule PassiveSupport.Module do
         nil
   """
   @spec check_for_export(atom, atom) :: {:function | :macro, [non_neg_integer()]} | nil
-  def check_for_export(module, export) do
-    filter = &Enum.filter(&1, fn {call, _} -> call == export end)
+  def check_for_export(module, export_type) do
+    filter = &Enum.filter(&1, fn {callable_type, _} -> callable_type == export_type end)
 
     with {:function, []} <- {:function, filter.(module.__info__(:functions))},
          {:macro, []} <- {:macro, filter.(module.__info__(:macros))}
@@ -35,6 +35,28 @@ defmodule PassiveSupport.Module do
         {:function, Keyword.values(arities)}
       {:macro, arities} ->
         {:macro, Keyword.values(arities)}
+    end
+  end
+
+  @doc """
+  Retrieves an alias with the same name as `string` if the alias was already referenced.
+
+  Returns `nil` if the alias has not already been referenced.
+
+  ## Examples
+
+      iex> from_string("PassiveSupport.Module")
+      PassiveSupport.Module
+
+      iex> from_string("PassiveSupport.Nodule")
+      nil
+  """
+  @spec from_string(String.t) :: atom | nil
+  def from_string(string) do
+    try do
+      Module.safe_concat([string])
+    rescue _ ->
+      nil
     end
   end
 end
