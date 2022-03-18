@@ -21,7 +21,7 @@ defmodule PassiveSupport.String do
       iex> match("footwear, fun, and fondue", ~r/((f[ou])[no]).+/U)
       ["foot", "foo", "fo"]
   """
-  @spec match(String.t(), Regex.t() | String.t(), [keyword]) :: [String.t()]
+  @spec match(String.t(), Regex.t() | String.t(), keyword) :: [String.t()]
   def match(string, pattern, opts \\ [])
   def match(string, %Regex{} = pattern, opts), do:
     Regex.run(pattern, string, opts)
